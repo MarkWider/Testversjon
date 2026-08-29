@@ -2,7 +2,7 @@
 
 ## Current state
 
-Første Agent Pilot implementeres på `codex/agent-pilot-mvp`.
+Første Agent Pilot er klar for Pull Request-review på `codex/agent-pilot-mvp`.
 
 ## Completed
 
@@ -11,14 +11,15 @@ Første Agent Pilot implementeres på `codex/agent-pilot-mvp`.
 - React/TypeScript/ECharts-førsteversjon og prosjektminne er lagt til arbeidsgrenen.
 - Datatester, TypeScript-sjekk og produksjonsbygg er bestått.
 - Desktop- og mobilvisning er kontrollert i nettleser uten konsollfeil.
+- Commit `18c7ab5` er pushet til GitHub som `codex/agent-pilot-mvp`.
 
 ## In progress
 
-- Push og Pull Request mot `main`.
+- Opprett Pull Request fra `codex/agent-pilot-mvp` til `main`.
+- Claude Code gjennomfører uavhengig review av PR-en.
 
 ## Next
 
-- Claude Code gjennomfører uavhengig review av PR-en.
 - Codex behandler eventuelle reviewfunn.
 - Neste produktiterasjon velger og implementerer en offisiell dataadapter.
 
