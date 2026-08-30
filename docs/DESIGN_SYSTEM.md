@@ -459,10 +459,134 @@ Den første implementasjonen trenger ikke bygge hele temasiden eller alle fire
 informasjonsnivåer. Den skal først bevise at én stor graf kan være både
 redaksjonelt tydelig og reelt interaktiv på desktop og mobil.
 
+## Komponent- og layoutregler
+
+Et **design token** er en navngitt standardverdi for eksempelvis farge, avstand
+eller radius. Tokens gjør at hele siden bruker samme visuelle regler, og at en
+senere justering kan gjøres ett sted i stedet for i hver komponent.
+
+### Grunnleggende tokens
+
+- Avstandsskala: 4, 8, 12, 16, 24, 32, 48, 64 og 96 px.
+- Maksimal innholdsbredde: omtrent 1280 px.
+- Maksimal bredde for lange tekstlinjer: omtrent 720–760 px.
+- Hovedgraf kan bruke opptil omtrent 1120 px når skjermen tillater det.
+- Standard kort-radius: 8 px; små elementer: 4 px.
+- Pilleform brukes bare når funksjonen krever det, eksempelvis segmenterte valg.
+- Kanter er tynne og dempede. Skygger brukes svært sparsomt.
+- Luft og bakgrunnsskift skal normalt skille seksjoner før rammer og skygger.
+
+Eksakte CSS-variabler etableres av frontend-eier i implementeringen, men skal
+følge denne begrensede skalaen.
+
+### Komponentprinsipper
+
+- **Header:** rolig, lav visuell høyde, tydelig logo og få primærvalg.
+- **Ingress:** begrenset tekstbredde og klar sammenheng med hovedgrafen.
+- **Grafkontroller:** plasseres nær grafen, grupperes etter funksjon og viser
+  aktiv tilstand tydelig.
+- **Segmenterte periodevalg:** 10 år, 25 år og hele perioden; én aktiv om gangen.
+- **Landvalg:** enkle av/på-valg med både navn og visuell status.
+- **Kilde-/metodepanel:** progressivt tilgjengelig uten å dominere hovedhistorien.
+- **Redaksjonelle kort:** bilde, kategori, overskrift og kort teaser; hele kortet
+  kan aktiveres, men får tydelig fokusmarkering.
+- **«Hva viser dette?»** er en egen rolig tekstblokk, ikke et varselkort.
+- **Feiltilstand:** forklar kort hva som skjedde og gi en tydelig ny
+  forsøksmulighet.
+- **Loading:** reserver grafens plass slik at siden ikke hopper når data lastes.
+
+## Responsivt design
+
+Layouten skal tilpasse seg innholdet, ikke bestemte telefonmodeller.
+
+- Desktop kan bruke bred graf og eventuelt tekst ved siden av når leseretningen
+  forblir tydelig.
+- På smalere skjermer stables overskrift, kontroller, graf og forklaring.
+- Grafkontroller kan brytes over flere linjer eller samles i et enkelt panel.
+- Ingen side eller graf skal få horisontal overflow.
+- Grafens plot-område skal prioriteres fremfor dekorasjon og lange etiketter.
+- Direkte etiketter kan erstattes eller forkortes på mobil dersom alternativet
+  er overlapp.
+- Hover-funksjoner skal ha tilsvarende trykk- og tastaturadferd.
+- Berøringsmål skal være minst 44 × 44 px der det er praktisk mulig.
+- Viktigste konklusjon og graf skal komme før sekundære kontroller på mobil.
+- Kontroller og tekst skal testes minst rundt 390 px, 768 px og 1440 px bredde,
+  men skal også fungere mellom disse målene.
+
+## Tilgjengelighet
+
+Første UX-runde skal følge WCAG 2.2 AA som praktisk mål.
+
+- All sentral funksjonalitet kan brukes med tastatur.
+- Fokusmarkering er tydelig og har tilstrekkelig kontrast.
+- Farge er aldri eneste informasjonsbærer.
+- Tekst og UI møter krav til kontrast.
+- Grafen har en meningsfull tekstlig beskrivelse og tilgjengelig datalternativ.
+- Tooltip-informasjon kan nås med tastaturfokus og trykk, ikke bare mus.
+- Statusendringer som loading og feil kommuniseres til hjelpemidler.
+- Bevegelse respekterer `prefers-reduced-motion`.
+- Zoom og større tekst skal ikke ødelegge hovedinnhold eller kontroller.
+- Kilder og metode skal være lesbare, ikke gjemmes i svært liten skrift.
+
+## Første UX-sprint
+
+### Mål
+
+Bevise at én side kan kombinere redaksjonell klarhet, premium nordisk uttrykk og
+reell datautforskning uten dashboard-følelse.
+
+### In scope
+
+- visuell omarbeiding av eksisterende BNP-side
+- Newsreader × Inter
+- design tokens basert på dokumentets palett og avstandsskala
+- tydelig overskrift og ingress
+- én stor interaktiv hovedgraf
+- periodevalg: 10 år, 25 år og hele tilgjengelige perioden
+- vise/skjule Sverige og Danmark
+- hover, trykk og tastaturfokus med eksakte verdier
+- tydelig markering av siste observasjon
+- dynamisk eller visningsnøytral «Hva viser dette?»-tekst som ikke motsier
+  aktive grafvalg
+- kilde, definisjon, metode og sist oppdatert
+- loading- og feiltilstander
+- desktop- og mobiltilpasning
+- relevante komponent- og interaksjonstester
+
+### Out of scope
+
+- full forside eller komplett temaside
+- politiske perioder i grafen
+- nye datakilder eller indikatorer
+- avansert landvelger utover Norge, Sverige og Danmark
+- redaksjonelle artikkelkort med produksjonsbilder
+- innlogging, lagring, deling eller URL-persistens
+- nedlasting dersom det krever nytt dataformat eller backend
+- registry, resolver, caching, database eller annen infrastruktur
+
+Politiske perioder er en egen etterfølgende oppgave. Data / Platform Engineer
+skal først etablere et kontrollert datasett og en enkel kontrakt; frontend skal
+ikke hardkode tilfeldig politisk historikk.
+
+### Akseptansekriterier
+
+- Standardvisningen er forståelig uten at brukeren gjør noe.
+- Alle grafvalg gir umiddelbar og tydelig respons.
+- Brukeren kan endre periode og sammenligningsland uten sideoppdatering.
+- Grafen og kontrollene fungerer med mus, tastatur og trykk.
+- Ingen horisontal overflow ved omtrent 390 px.
+- Siden fungerer visuelt ved omtrent 390, 768 og 1440 px.
+- Kilde, definisjon, metode og oppdateringsdato er tilgjengelig.
+- Ekte World Bank-data brukes gjennom eksisterende `getIndicatorData`.
+- Ingen frontendkode importerer adapter- eller datamoduler direkte.
+- Eksisterende tester består, og nye interaksjoner har relevante tester.
+- Produksjonsbuild består uten nye ikke-dokumenterte advarsler.
+- Browser console er fri for feil i normal bruk.
+
 ## Åpne deler
 
-Følgende legges til før dokumentet brukes som komplett implementeringsgrunnlag:
+Følgende kan konkretiseres gjennom implementering og review uten ny eierbeslutning:
 
-- komponentregler
-- responsive regler
-- tilgjengelighetskrav
+- endelige CSS-tokennavn og små størrelsesjusteringer
+- presise animasjonskurver og varigheter
+- detaljer i grafetiketter ved svært smale bredder
