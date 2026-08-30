@@ -1,8 +1,8 @@
 # Design foundation
 
 Dette er det levende designgrunnlaget for Norge i tall. Dokumentet beskriver
-visuell retning, fargebruk og redaksjonell stemme. Det skal senere utvides med
-typografi, komponentregler og sidestruktur før frontend implementeres.
+visuell retning, fargebruk, typografi og redaksjonell stemme. Det skal senere
+utvides med komponentregler og sidestruktur før frontend implementeres.
 
 ## Hovedretning
 
@@ -99,6 +99,55 @@ Divergerende skala, negativ via nøytral til positiv:
   merkevarefarger.
 - Kontrast og lesbarhet skal fungere på både lys skjerm og mobil.
 
+## Typografi
+
+### Prinsipp
+
+Bruk en kombinasjon av redaksjonell serif og moderne sans-serif:
+
+- **Newsreader** for store overskrifter og redaksjonelle statements.
+- **Inter** for brødtekst, navigasjon, grafer, tall og øvrig UI.
+
+Newsreader gir sentrale budskap redaksjonell tyngde og personlighet. Inter holder
+grensesnittet rent, nordisk og svært lesbart. Sammen skal de gjøre produktet mer
+til en moderne datapublikasjon enn et offentlig dashboard.
+
+Uttrykket skal ha redaksjonell autoritet, men være visuelt lettere, renere og mer
+nordisk enn en tradisjonell nyhetspublikasjon. Tallene og innholdet er
+hovedpersonen; typografien gir struktur og karakter uten å dominere.
+
+### Hierarki
+
+| Element | Skrift | Vekt | Retning |
+|---|---|---|---|
+| Store side- og historieoverskrifter | Newsreader | Medium eller semibold | Tydelig redaksjonell inngang med god luft |
+| Redaksjonelle statements | Newsreader | Medium eller semibold | Korte, meningsbærende formuleringer |
+| Seksjonsoverskrifter | Inter som standard; Newsreader når overskriften er redaksjonell | Semibold | Funksjonell eller redaksjonell etter innhold |
+| Brødtekst | Inter | Regular | Rolig, lesbar og relativt korte linjer |
+| Nøkkeltall | Inter | Medium eller semibold | Store, rene tall uten unødvendig dekorasjon |
+| Grafetiketter og akser | Inter | Regular eller medium | Kompakt og tydelig |
+| Navigasjon, knapper og filtre | Inter | Medium | Funksjonell og konsistent |
+| Kilder og metadata | Inter | Regular | Sekundær, men fortsatt lett å lese |
+| Små labels og kategorier | Inter | Medium | Moderat økt bokstavavstand |
+
+### Regler
+
+- Bruk få fontvekter og et begrenset antall størrelser.
+- Newsreader brukes selektivt; den skal signalisere redaksjonell betydning, ikke
+  dekorere alle overskrifter.
+- Inter er standardskriften for all funksjonell informasjon og alle tall.
+- Unngå svært tynn tekst, særlig på mobil og i grafer.
+- Bruk luft, linjehøyde og plassering til å skape hierarki før flere størrelser
+  eller vekter introduseres.
+- Brødtekst skal ha en behagelig maksimal linjelengde og ikke strekkes over hele
+  brede skjermer.
+- Nøkkeltall skal bruke tabellariske sifre når sammenstilling eller justering
+  krever det.
+- Graftekst og kilder skal ikke bli så små at premiumfølelsen oppnås på
+  bekostning av lesbarhet.
+- Fontinnlasting skal ikke blokkere forståelig visning; definer egnede
+  fallback-fonter for både serif og sans-serif.
+
 ## Redaksjonell stemme
 
 ### Analytisk klarhet med redaksjonell tyngde
@@ -180,7 +229,6 @@ enklere og mer funksjonelle, uten redaksjonell stilisering.
 
 Følgende legges til før dokumentet brukes som komplett implementeringsgrunnlag:
 
-- typografisk system
 - innholdshierarki og sidestruktur
 - komponentregler
 - graf- og interaksjonsdetaljer
