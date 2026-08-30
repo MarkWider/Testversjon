@@ -535,6 +535,34 @@ Første UX-runde skal følge WCAG 2.2 AA som praktisk mål.
 Bevise at én side kan kombinere redaksjonell klarhet, premium nordisk uttrykk og
 reell datautforskning uten dashboard-følelse.
 
+### Teknisk dependency før frontendimplementering
+
+Dagens tjeneste legger automatisk på pilotvinduet 2015–2023 når `from` og `to`
+mangler. Frontend kan derfor ikke uttrykke «hele tilgjengelige perioden» gjennom
+dagens API. Dette skal løses i en liten, separat Data / Platform-PR før Codex
+implementerer periodevelgeren.
+
+Tjenestelaget utvides med et eksplisitt, kildeuavhengig valg, anbefalt form:
+
+```ts
+getIndicatorData('gdp_per_capita', { periodMode: 'all' })
+```
+
+Regler:
+
+- `periodMode: 'default'` eller utelatt valg beholder pilotens standardvindu.
+- `periodMode: 'all'` sender ingen automatisk `from`/`to` til datakilden.
+- Eksplisitte `from` og `to` skal fortsatt vinne.
+- Tjenesten fjerner det service-spesifikke valget før adapteren kalles.
+- Ingen endring er nødvendig i `IndicatorSeries` eller World Bank-adapteren.
+- Ingen kildeår eller World Bank-spesifikke grenser hardkodes i frontend.
+- Endringen skal testes og dokumenteres som en liten, reversibel
+  tjenesteutvidelse.
+
+Periodekontrollene 10 år og 25 år kan deretter bruke eksplisitte grenser eller
+filtrere den hentede serien. «Hele perioden» skal bruke den eksplisitte
+`periodMode: 'all'`-semantikken.
+
 ### In scope
 
 - visuell omarbeiding av eksisterende BNP-side
