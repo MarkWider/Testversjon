@@ -103,6 +103,16 @@ export function buildFindings(series: IndicatorSeries, periodSelection: PeriodSe
     }
   }
 
+  if (values.length < 2) {
+    const onlyValue = values[0]
+    return {
+      heading: 'Bare ' + onlyValue.name + ' har tall i siste observerte år',
+      lead: 'I ' + latestPeriod + ' har bare ' + onlyValue.name + ' en registrert verdi blant landene som vises. Det er derfor ikke mulig å sammenligne nivået mellom landene dette året.',
+      latest: 'Den registrerte verdien for ' + onlyValue.name + ' i ' + latestPeriod + ' er ' + formatValue(onlyValue.value, series.unit) + '.',
+      comparison: 'En sammenligning krever at minst ett annet synlig land har en gyldig verdi i samme periode.',
+    }
+  }
+
   const highestName = highest.name
   const latest = 'I ' + latestPeriod + ' ligger ' + highestName + ' høyest, på ' + formatValue(highest.value, series.unit) + '.'
   const comparison = lowest && lowest.region !== highest.region

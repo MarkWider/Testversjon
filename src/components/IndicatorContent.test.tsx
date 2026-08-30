@@ -93,7 +93,7 @@ describe('data-derived findings', () => {
     expect(buildFindings(norwayLeads, 'all').heading).toBe('Norge ligger gjennomgående høyest')
   })
 
-  it('does not treat a period with one valid country as proof of a consistent lead', () => {
+  it('uses a defensive, data-derived message when only Norway has a value', () => {
     const insufficientComparison: IndicatorSeries = {
       ...createSeries(),
       points: [
@@ -103,7 +103,27 @@ describe('data-derived findings', () => {
       ],
     }
 
-    expect(buildFindings(insufficientComparison, 'all').heading).toBe('Norge ligger høyest i siste observerte år')
+    const findings = buildFindings(insufficientComparison, 'all')
+    expect(findings.heading).toBe('Bare Norge har tall i siste observerte år')
+    expect(findings.lead).toContain('ikke mulig å sammenligne')
+    expect(findings.latest).toMatch(/^Den registrerte verdien for Norge i 2024 er 100\s000\sUSD\.$/)
+    expect(findings.comparison).toContain('minst ett annet synlig land')
+    expect([findings.heading, findings.lead, findings.latest, findings.comparison].join(' ')).not.toContain('høyest')
+  })
+
+  it('names the country with data without assuming Norway is the only value', () => {
+    const onlySweden: IndicatorSeries = {
+      ...createSeries(),
+      points: [
+        { period: '2024', region: 'NO', value: null },
+        { period: '2024', region: 'SE', value: 80_000 },
+        { period: '2024', region: 'DK', value: null },
+      ],
+    }
+
+    const findings = buildFindings(onlySweden, 'all')
+    expect(findings.heading).toBe('Bare Sverige har tall i siste observerte år')
+    expect(findings.latest).toMatch(/^Den registrerte verdien for Sverige i 2024 er 80\s000\sUSD\.$/)
   })
 })
 
