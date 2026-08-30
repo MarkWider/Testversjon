@@ -45,11 +45,17 @@ fjernes av datalag-eier når migreringen er koordinert ferdig.
 sorteres.
 
 **`worldBankSource` er den aktive kilden for `gdp_per_capita`** (DEC-007).
-`getIndicatorData` legger på et standard periodevindu 2015–2023 per grense når
-caller ikke oppgir `from`/`to`, og sender `IndicatorError` fra kilden videre med
-uendret `code` (kun ukjente feil blir `source_unavailable`). `sampleSource` og
+`getIndicatorData` sender `IndicatorError` fra kilden videre med uendret `code`
+(kun ukjente feil blir `source_unavailable`). `sampleSource` og
 `src/data/sample/gdpPerCapita.ts` beholdes i koden for reversibilitet, men er ikke
 lenger koblet inn.
+
+Periodevindu velges kildeuavhengig via `GetIndicatorDataOptions.periodMode`
+(DEC-008): `'default'` (eller utelatt) legger på pilotvinduet 2015–2023 per
+grense når `from`/`to` mangler; `'all'` legger ikke på noen automatiske grenser,
+så kilden returnerer hele tilgjengelige historikken. Eksplisitte `from`/`to`
+vinner alltid. `periodMode` strippes fra options før `IndicatorSource` kalles —
+adapterne ser det aldri.
 
 Senere kilder (SSB, Eurostat, OECD) legges til på samme måte, med en resolver som
 velger kilde per region. Piloten bygger ikke ETL, database, caching eller backend.

@@ -6,6 +6,10 @@
 // Active source for `gdp_per_capita`: the World Bank adapter (docs/DECISIONS.md
 // DEC-007). `sampleSource` is kept in the codebase for reversibility but is no
 // longer wired in here.
+//
+// `periodMode` (DEC-008) lets a caller pick the period window without knowing
+// any source's start/end years. It is a service concern and is stripped before
+// the source is called.
 
 import type {
   GetIndicatorOptions,
@@ -43,13 +47,29 @@ export class IndicatorError extends Error {
 }
 
 /**
- * Default period window for the technical pilot. Applied per bound only when the
- * caller leaves it unset, so the visualisation keeps its current 2015–2023 scope
- * without a real source (World Bank) otherwise returning its full history
- * (~1960–). An explicit `from` / `to` from the caller always wins.
+ * Period-window strategy, independent of any data source.
  *
- * This is a pilot display choice, not a methodological statement about the
- * indicator.
+ *  - `'default'` (or omitted): keep the technical pilot's 2015–2023 window; a
+ *    bound the caller leaves unset is filled from it.
+ *  - `'all'`: add no automatic `from` / `to` — the source returns its full
+ *    available history. Explicit `from` / `to` are still honoured, and a missing
+ *    opposite bound is *not* filled.
+ */
+export type PeriodMode = 'default' | 'all'
+
+/**
+ * Options for {@link getIndicatorData}: the source-facing {@link GetIndicatorOptions}
+ * plus the service-level {@link PeriodMode}. `periodMode` never reaches a data
+ * source — it is removed before the source is called.
+ */
+export interface GetIndicatorDataOptions extends GetIndicatorOptions {
+  periodMode?: PeriodMode
+}
+
+/**
+ * The technical pilot's default period window. A pilot display choice, not a
+ * methodological statement about the indicator. Without it a real source (World
+ * Bank) returns its full history (~1960–).
  */
 const PILOT_PERIOD = { from: '2015', to: '2023' } as const
 
@@ -67,17 +87,23 @@ const PILOT_PERIOD = { from: '2015', to: '2023' } as const
  */
 export async function getIndicatorData(
   id: IndicatorId,
-  options?: GetIndicatorOptions,
+  options?: GetIndicatorDataOptions,
 ): Promise<IndicatorSeries> {
-  const effectiveOptions: GetIndicatorOptions = {
-    ...options,
-    from: options?.from ?? PILOT_PERIOD.from,
-    to: options?.to ?? PILOT_PERIOD.to,
-  }
+  const { periodMode = 'default', ...contractOptions } = options ?? {}
+
+  // `periodMode` is a service concern and is never forwarded to the source.
+  const sourceOptions: GetIndicatorOptions =
+    periodMode === 'all'
+      ? { ...contractOptions }
+      : {
+          ...contractOptions,
+          from: contractOptions.from ?? PILOT_PERIOD.from,
+          to: contractOptions.to ?? PILOT_PERIOD.to,
+        }
 
   let raw: IndicatorSeries | null
   try {
-    raw = await worldBankSource.fetch(id, effectiveOptions)
+    raw = await worldBankSource.fetch(id, sourceOptions)
   } catch (err) {
     // A typed IndicatorError from the source already carries the right code —
     // pass it through unchanged. Only genuinely unexpected failures become

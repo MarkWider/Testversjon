@@ -4,23 +4,39 @@ import { validateIndicatorSeries } from '../contracts/validate'
 import { IndicatorError, getIndicatorData } from './indicators'
 import wbFixture from '../adapters/__fixtures__/worldBank.gdpPerCapita.json'
 
-const [WB_META, WB_ROWS] = wbFixture as [
-  unknown,
-  Array<{ countryiso3code: string; date: string; value: number | null }>,
+type WbRow = { countryiso3code: string; date: string; value: number | null }
+
+const [WB_META, WB_ROWS] = wbFixture as [unknown, WbRow[]]
+
+// The real captured fixture only spans 2015–2023. To tell `periodMode: 'all'`
+// apart from the 2015–2023 default we widen it here with synthetic pre-2015
+// rows, so the "full history" the mock exposes is 2010–2023.
+const EARLY_YEARS = ['2010', '2011', '2012', '2013', '2014']
+const WIDE_ROWS: WbRow[] = [
+  ...['NOR', 'SWE', 'DNK'].flatMap((iso3) =>
+    EARLY_YEARS.map((date) => ({ countryiso3code: iso3, date, value: 50000 })),
+  ),
+  ...WB_ROWS,
 ]
+const HISTORY_START = '2010'
+const HISTORY_END = '2023'
 
 function response(body: unknown, ok = true, status = 200): Response {
   return { ok, status, json: () => Promise.resolve(body) } as unknown as Response
 }
 
-/** URL-aware World Bank mock: honours the `country/{iso3;iso3}` path segment. */
+/**
+ * URL-aware World Bank mock. Honours the `country/{iso3;iso3}` path segment.
+ * Deliberately ignores the `date=` query param — the adapter applies the range
+ * client-side, so this also proves the service's from/to reached the adapter.
+ */
 function worldBankMock(url: string): Promise<Response> {
   const match = /\/country\/([^/]+)\/indicator\//.exec(url)
   const iso3s = match ? decodeURIComponent(match[1]).split(';') : []
   const rows =
     iso3s.length > 0
-      ? WB_ROWS.filter((r) => iso3s.includes(r.countryiso3code))
-      : WB_ROWS
+      ? WIDE_ROWS.filter((r) => iso3s.includes(r.countryiso3code))
+      : WIDE_ROWS
   return Promise.resolve(response([WB_META, rows]))
 }
 
@@ -188,6 +204,106 @@ describe('getIndicatorData options', () => {
       regions: ['XX', 'NO'],
     })
     expect(series.regions.map((r) => r.code)).toEqual(['NO'])
+  })
+})
+
+describe('getIndicatorData periodMode', () => {
+  const requestedUrl = async (
+    options?: Parameters<typeof getIndicatorData>[1],
+  ): Promise<string> => {
+    const fetchSpy = vi.fn(worldBankMock)
+    stubFetch(fetchSpy)
+    await getIndicatorData('gdp_per_capita', options).catch(() => undefined)
+    return String(fetchSpy.mock.calls[0]?.[0] ?? '')
+  }
+
+  it('omitted periodMode keeps the 2015–2023 window', async () => {
+    const series = await getIndicatorData('gdp_per_capita')
+    expect(uniquePeriods(series)).toEqual([
+      '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023',
+    ])
+  })
+
+  it("periodMode: 'default' keeps the 2015–2023 window", async () => {
+    const series = await getIndicatorData('gdp_per_capita', {
+      periodMode: 'default',
+    })
+    expect(uniquePeriods(series)).toEqual([
+      '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023',
+    ])
+    expect(await requestedUrl({ periodMode: 'default' })).toContain(
+      'date=2015%3A2023',
+    )
+  })
+
+  it("periodMode: 'all' sends no automatic date range", async () => {
+    expect(await requestedUrl({ periodMode: 'all' })).not.toContain('date=')
+  })
+
+  it("periodMode: 'all' returns the full available history", async () => {
+    const series = await getIndicatorData('gdp_per_capita', { periodMode: 'all' })
+    const periods = uniquePeriods(series)
+    expect(periods[0]).toBe(HISTORY_START)
+    expect(periods.at(-1)).toBe(HISTORY_END)
+    expect(periods).toHaveLength(14)
+    expect(series.points).toHaveLength(14 * 3)
+    expect(periodsInOrder(series)).toBe(true)
+  })
+
+  it("periodMode: 'all' with an explicit from keeps from and adds no to", async () => {
+    const series = await getIndicatorData('gdp_per_capita', {
+      periodMode: 'all',
+      from: '2012',
+    })
+    const periods = uniquePeriods(series)
+    expect(periods[0]).toBe('2012')
+    expect(periods.at(-1)).toBe(HISTORY_END)
+    expect(periods).not.toContain('2011')
+  })
+
+  it("periodMode: 'all' with an explicit to keeps to and adds no from", async () => {
+    const series = await getIndicatorData('gdp_per_capita', {
+      periodMode: 'all',
+      to: '2019',
+    })
+    const periods = uniquePeriods(series)
+    expect(periods[0]).toBe(HISTORY_START)
+    expect(periods.at(-1)).toBe('2019')
+    expect(periods).not.toContain('2020')
+  })
+
+  it('default mode with explicit from/to keeps current semantics', async () => {
+    const series = await getIndicatorData('gdp_per_capita', {
+      from: '2020',
+      to: '2022',
+    })
+    expect(uniquePeriods(series)).toEqual(['2020', '2021', '2022'])
+    expect(await requestedUrl({ from: '2020', to: '2022' })).toContain(
+      'date=2020%3A2022',
+    )
+  })
+
+  it('periodMode does not leak to the data source', async () => {
+    const withMode = await requestedUrl({
+      periodMode: 'all',
+      from: '2012',
+      to: '2015',
+    })
+    const withoutMode = await requestedUrl({ from: '2012', to: '2015' })
+    // identical explicit bounds => identical request, mode had no effect
+    expect(withMode).toBe(withoutMode)
+    expect(withMode.toLowerCase()).not.toContain('periodmode')
+  })
+
+  it("periodMode: 'all' leaves region semantics unchanged", async () => {
+    const series = await getIndicatorData('gdp_per_capita', {
+      periodMode: 'all',
+      regions: ['DK', 'NO'],
+    })
+    expect(series.regions.map((r) => r.code)).toEqual(['NO', 'DK'])
+    expect(series.points.every((p) => p.region === 'NO' || p.region === 'DK')).toBe(
+      true,
+    )
   })
 })
 
