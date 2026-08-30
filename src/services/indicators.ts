@@ -1,9 +1,11 @@
 // Stable, frontend-facing entry point to the data layer.
 //
 // The frontend imports ONLY from this module and from ../contracts/indicator.
-// It must never need to import ../data/* directly. Today this resolves from the
-// bundled sample source; a future SSB / OECD / Eurostat adapter slots in behind
-// the same `getIndicatorData` signature with no frontend change.
+// It must never need to import ../data/* or ../adapters/* directly.
+//
+// Active source for `gdp_per_capita`: the World Bank adapter (docs/DECISIONS.md
+// DEC-007). `sampleSource` is kept in the codebase for reversibility but is no
+// longer wired in here.
 
 import type {
   GetIndicatorOptions,
@@ -11,7 +13,7 @@ import type {
   IndicatorSeries,
 } from '../contracts/indicator'
 import { validateIndicatorSeries } from '../contracts/validate'
-import { sampleSource } from '../data/sampleSource'
+import { worldBankSource } from '../adapters/worldBank'
 
 export type {
   GetIndicatorOptions,
@@ -41,6 +43,17 @@ export class IndicatorError extends Error {
 }
 
 /**
+ * Default period window for the technical pilot. Applied per bound only when the
+ * caller leaves it unset, so the visualisation keeps its current 2015–2023 scope
+ * without a real source (World Bank) otherwise returning its full history
+ * (~1960–). An explicit `from` / `to` from the caller always wins.
+ *
+ * This is a pilot display choice, not a methodological statement about the
+ * indicator.
+ */
+const PILOT_PERIOD = { from: '2015', to: '2023' } as const
+
+/**
  * Fetch one indicator as a normalized {@link IndicatorSeries}.
  *
  * Guarantees on the resolved value:
@@ -48,21 +61,31 @@ export class IndicatorError extends Error {
  *  - the shape has been validated against the contract
  *
  * Rejects with {@link IndicatorError}:
- *  - `not_found`          — unknown indicator id
- *  - `source_unavailable` — upstream source unreachable (future adapters only)
+ *  - `not_found`          — unknown indicator id, or the source has no data for it
+ *  - `source_unavailable` — upstream source unreachable / unexpected failure
  *  - `invalid`            — source returned data that violates the contract
  */
 export async function getIndicatorData(
   id: IndicatorId,
   options?: GetIndicatorOptions,
 ): Promise<IndicatorSeries> {
+  const effectiveOptions: GetIndicatorOptions = {
+    ...options,
+    from: options?.from ?? PILOT_PERIOD.from,
+    to: options?.to ?? PILOT_PERIOD.to,
+  }
+
   let raw: IndicatorSeries | null
   try {
-    raw = await sampleSource.fetch(id, options)
-  } catch {
+    raw = await worldBankSource.fetch(id, effectiveOptions)
+  } catch (err) {
+    // A typed IndicatorError from the source already carries the right code —
+    // pass it through unchanged. Only genuinely unexpected failures become
+    // `source_unavailable`.
+    if (err instanceof IndicatorError) throw err
     throw new IndicatorError(
       'source_unavailable',
-      `Kilden «${sampleSource.id}» kunne ikke levere «${id}».`,
+      `Kilden «${worldBankSource.id}» kunne ikke levere «${id}».`,
     )
   }
 
