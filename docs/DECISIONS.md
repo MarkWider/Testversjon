@@ -86,3 +86,28 @@ Innfore `RegionLevel`-markor og/eller kilde-array na.
 Consequences:
 Revurderes nar forste indikator faktisk trenger sub-nasjonal geografi eller
 flere kilder. Ingen kode bygget rundt de avviste alternativene.
+
+## DEC-006
+
+Decision:
+Forste ekte eksterne datakilde-adapter er World Bank
+(`NY.GDP.PCAP.CD`, BNP per innbygger, lopende USD) for NO/SE/DK. Adapteren legges
+i `src/adapters/worldBank.ts` bak kontrakten, men aktiveres IKKE som default i
+`getIndicatorData` i denne omgang - `sampleSource` er fortsatt aktiv standard.
+
+Reason:
+World Bank er valgt som forste kilde fordi den dekker alle tre land, har apent
+API uten nokkel, og lar dagens trelandsvisualisering sta uendret. Aktivering
+holdes tilbake sa Codex sin frontend-migrering og denne adapteren kan merges og
+verifiseres uavhengig for det lille integrasjonssteget der ekte data slas pa.
+
+Alternatives:
+SSB forst (kun Norge - ville endret grafen); aktivere World Bank i samme PR.
+
+Consequences:
+`src/adapters/` og de interne modulene `src/data/source.ts` (flyttet
+`IndicatorSource`) og `src/data/period.ts` (delte periode-hjelpere) finnes na.
+`IndicatorError` importeres av adapteren fra `src/services/` - kan flyttes til
+`src/contracts/` senere (ikke-brytende). For World Bank kan bli default ma
+`getIndicatorData` slippe gjennom `IndicatorError` fra kilden i stedet for a pakke
+alt som `source_unavailable`.

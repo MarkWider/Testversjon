@@ -2,46 +2,48 @@
 
 ## Current state
 
-Baseline (PR #1) og architecture proposal (PR #2) er merget til `main`.
-`main` er GitHub default branch. Foundation-laget for frontend <-> data-kontrakten
-er implementert paa `claude/indicator-contract-foundation` og ligger som PR mot
-`main` til review.
+Baseline (#1), architecture proposal (#2) og foundation-laget (#3) er merget til
+`main`. Forste reelle parallelle utviklingsrunde pagar:
+
+- Codex: migrerer frontend til `IndicatorSeries` / `getIndicatorData()`
+  (`codex/indicator-frontend`).
+- Claude Code: forste ekte datakilde-adapter (World Bank) paa
+  `claude/world-bank-adapter`, ligger som PR mot `main`.
 
 ## Completed
 
-- Repository koblet til GitHub; `main` er godkjent hovedgren og default branch.
-- React/TypeScript/ECharts-baseline merget (PR #1).
+- React/TypeScript/ECharts-baseline merget (#1).
 - Uavhengig Claude-review av baseline: PASS etter tre blocker-fikser, verifisert
   med reell `pnpm install` / `test` / `build`.
-- Data-kontrakt-proposal godkjent av Codex (APPROVE, ingen blocking changes) og
-  merget (PR #2, `docs/proposals/data-contract.md`).
-- Foundation-lag implementert: `src/contracts/indicator.ts`,
-  `src/contracts/validate.ts`, `src/services/indicators.ts`,
-  `src/data/sampleSource.ts`, `src/data/sample/gdpPerCapita.ts`, med tester.
+- Data-kontrakt-proposal godkjent av Codex og merget (#2).
+- Foundation-lag merget (#3): `src/contracts/`, `src/services/getIndicatorData`,
+  `sampleSource`, med tester.
+- World Bank-adapter implementert bak kontrakten (`src/adapters/worldBank.ts`),
+  med fixture-baserte tester og live-API-verifikasjon. Ikke aktivert som default.
 
 ## In progress
 
-- Review og merge av foundation-PR (`claude/indicator-contract-foundation`).
+- Review + merge av World Bank-adapter-PR (`claude/world-bank-adapter`).
+- Review + merge av frontend-migrerings-PR (`codex/indicator-frontend`).
 
 ## Next
 
-- Codex migrerer frontend til `getIndicatorData` (proposalets Migration, steg
-  3-5) og fjerner den direkte importen av `src/data/gdpPerCapita.ts`.
-- Etter at foundation er merget: forste ekte datakilde-adapter (SSB) i
-  `src/adapters/`, bak samme kontrakt.
+- Nar begge PR-ene er merget: lite integrasjonssteg som bytter default source i
+  `getIndicatorData` fra `sampleSource` til `worldBankSource` (egen PR).
+- Deretter neste kilde-lag: SSB (Norge), sa Eurostat, sa OECD, med resolver og
+  fler-kilde-`source` (kontrakt-endring, eget forslag).
 
 ## Known issues
 
-- `src/data/gdpPerCapita.ts` finnes fortsatt og importeres av `src/App.tsx` og
-  `src/components/GdpChart.tsx`. Den fjernes naar frontend er migrert til
-  `getIndicatorData`. Sample-verdiene finnes da to steder til migreringen er
-  gjort.
-- `IndicatorError`-kodene `source_unavailable` og `invalid` er definert for
-  framtidige adaptere; sample-kilden utloser dem ikke, saa de er kun daekket av
-  enhetstest av validatoren, ikke ende-til-ende.
-- Lokal runtime er na Node 24.19.0 LTS + pnpm 11.19.0 (via Corepack) paa
-  utviklingsmaskinen.
+- `src/data/gdpPerCapita.ts` finnes fortsatt til frontend-migreringen er merget.
+- For World Bank kan aktiveres: `getIndicatorData` maa slippe gjennom
+  `IndicatorError` fra kilden i stedet for a pakke alt som `source_unavailable`
+  (bare catch-blokk i `src/services/indicators.ts`).
+- `worldBankSource` bruker global `fetch` ved runtime. Ved build-time snapshot
+  senere injiseres `fetchJson` via `createWorldBankSource({ fetchJson })`.
+- `source.fetchedAt` fra World Bank er kildens `lastupdated` (dato, ikke
+  klokkeslett) - bevisst valg for determinisme i en snapshot-pipeline.
 
 ## Recommended model for next task
 
-Claude Sonnet 5, HIGH for SSB-adapter og normalisering.
+Claude Sonnet 5, HIGH for SSB-adapter, resolver og fler-kilde-normalisering.
