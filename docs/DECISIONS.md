@@ -137,3 +137,31 @@ koden (ikke lenger koblet inn i `getIndicatorData`) for reversibilitet. Ingen
 registry/resolver/caching/config - neste kilde-lag (SSB m.fl.) er egne PR-er.
 `getIndicatorData` kaller `worldBankSource`, som ved runtime bruker global
 `fetch`; tester stubber `fetch` mot den fangede fixturen.
+
+## DEC-008
+
+Decision:
+`getIndicatorData` far et kildeuavhengig service-valg `periodMode: 'default' |
+'all'`, via `GetIndicatorDataOptions extends GetIndicatorOptions` i
+`src/services/indicators.ts`.
+- `'default'` / utelatt: dagens pilotvindu 2015-2023, med per-grense-fyll av
+  manglende `from`/`to`.
+- `'all'`: ingen automatiske `from`/`to`; kilden returnerer hele tilgjengelige
+  historikken. Eksplisitte `from`/`to` beholdes, og motsatt grense fylles ikke.
+`periodMode` fjernes fra options for datakilden kalles.
+
+Reason:
+Forste UX-sprint (docs/DESIGN_SYSTEM.md, "Teknisk dependency for
+frontendimplementering") trenger et periodevalg "Hele perioden" uten a hardkode
+World Banks start-/sluttar i frontend.
+
+Alternatives:
+Egen `getFullHistory`-funksjon; la frontend sende en veldig lav `from`; utvide
+`GetIndicatorOptions` i kontrakten (ville lekket service-begrep til adapterne).
+
+Consequences:
+`IndicatorSeries` og World Bank-adapteren er uendret. `periodMode` er
+tjenestespesifikt og nar aldri `IndicatorSource`/adapteren. Liten og reversibel:
+utvidelsen er én ny type og én gren i `getIndicatorData`. Frontend-periodevalgene
+"10 ar"/"25 ar" bruker eksplisitte grenser; "Hele perioden" bruker
+`periodMode: 'all'`.

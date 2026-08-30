@@ -3,11 +3,16 @@
 ## Current state
 
 Baseline (#1), data-kontrakt-proposal (#2), foundation-laget (#3),
-frontend-migreringen (#4) og World Bank-adapteren (#5) er merget til `main`.
+frontend-migreringen (#4), World Bank-adapteren (#5) og World Bank-aktiveringen
+(#8) er merget til `main`. Designgrunnlaget (`docs/DESIGN_SYSTEM.md`, #9) er også
+merget.
 
-`getIndicatorData('gdp_per_capita')` serveres nå av **World Bank**
-(`NY.GDP.PCAP.CD`, løpende USD) gjennom den uendrede `IndicatorSeries`-kontrakten.
-Aktiveringen ligger som egen PR (`claude/world-bank-activation`).
+`getIndicatorData('gdp_per_capita')` serveres av **World Bank**
+(`NY.GDP.PCAP.CD`, løpende USD) gjennom den uendrede `IndicatorSeries`-kontrakten,
+med pilotvindu 2015–2023 som standard.
+
+`periodMode`-utvidelsen (`claude/period-mode`) ligger som egen PR og er den siste
+tekniske dependencyen før første UX-sprint.
 
 ## Completed
 
@@ -18,25 +23,31 @@ Aktiveringen ligger som egen PR (`claude/world-bank-activation`).
   `sampleSource`, med tester.
 - Frontend-migrering merget (#4): App og grafkomponenter bruker kun
   `getIndicatorData()` / `IndicatorSeries`; generisk `IndicatorChart`,
-  `formatValue(value, unit)`, loading/error/success-tilstander; gammel `GdpChart`
-  og direkte `src/data/gdpPerCapita.ts`-import fjernet fra frontend.
+  `formatValue(value, unit)`, loading/error/success-tilstander.
   Claude cross-review: APPROVE.
 - World Bank-adapter merget (#5): `src/adapters/worldBank.ts` bak kontrakten,
   fixture-baserte tester + live-API-verifikasjon.
-- World Bank aktivert som kilde for `gdp_per_capita` (denne PR-en, DEC-007):
+- World Bank aktivert som kilde for `gdp_per_capita` merget (#8, DEC-007):
   standard periodevindu 2015–2023, `IndicatorError`-koder bevart fra kilden.
+- Designgrunnlag merget (#9): `docs/DESIGN_SYSTEM.md` — visuelt/redaksjonelt
+  system, typografi, UX-arkitektur, interaktiv graf, første UX-sprint.
 
 ## In progress
 
-- Review + merge av aktiverings-PR (`claude/world-bank-activation`).
+- `periodMode`-utvidelse (`claude/period-mode`, DEC-008): kildeuavhengig
+  `periodMode: 'default' | 'all'` i `getIndicatorData` slik at frontend kan tilby
+  «Hele perioden» uten å hardkode kildeår. `IndicatorSeries` og adapteren
+  uendret.
 
 ## Next
 
-- Neste kilde-lag: SSB (Norge), så Eurostat, så OECD, med resolver og
+- Første UX-sprint (`docs/DESIGN_SYSTEM.md`): Codex omarbeider BNP-siden visuelt
+  og bygger interaktiv graf + periodevalg (10 år / 25 år / Hele perioden) mot
+  `getIndicatorData` + `periodMode`.
+- Deretter neste kilde-lag: SSB (Norge), så Eurostat, så OECD, med resolver og
   fler-kilde-`source` (kontrakt-endring, eget forslag).
 - Koordinert opprydding: `src/data/gdpPerCapita.ts` + `gdpPerCapita.test.ts`
   fjernes av datalag-eier (ikke lenger importert av produksjonskode).
-  `sampleSource` beholdes så lenge den er nyttig for test/reversibilitet.
 
 ## Known issues
 
@@ -53,4 +64,5 @@ Aktiveringen ligger som egen PR (`claude/world-bank-activation`).
 
 ## Recommended model for next task
 
-Claude Sonnet 5, HIGH for SSB-adapter, resolver og fler-kilde-normalisering.
+Codex GPT-5.6 Terra HIGH for første UX-sprint; Claude Sonnet 5 HIGH for neste
+kilde-lag (SSB) og resolver.
