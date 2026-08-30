@@ -2,12 +2,14 @@
 
 ## Frontend
 
-Vite serverer en enkel React/TypeScript-enkeltside. `src/App.tsx` henter én
-indikator gjennom den offentlige `getIndicatorData()`-tjenesten og presenterer
-loading-, feil- og suksess-tilstander. `src/charts/IndicatorChart.tsx` oversetter
-en `IndicatorSeries` i long format til en responsiv ECharts-linjegraf uten å
-kjenne den konkrete datakilden. `src/charts/formatValue.ts` formaterer tall fra
-`IndicatorUnit`-metadata.
+Vite serverer en React/TypeScript-enkeltside. `src/App.tsx` henter én indikator
+gjennom den offentlige `getIndicatorData()`-tjenesten med `periodMode: 'all'` og
+presenterer loading-, feil- og suksess-tilstander. `src/components/IndicatorContent.tsx`
+filtrerer deretter den hentede `IndicatorSeries` klient-side til 10, 25 eller alle
+observerte perioder, og viser/skjuler sammenligningsland uten ny datahenting.
+`src/charts/IndicatorChart.tsx` oversetter long format til en responsiv
+ECharts-linjegraf uten å kjenne den konkrete datakilden. En progressiv datatabell
+gir samme eksakte verdier til tastatur- og skjermleserbrukere.
 
 ## Datakontrakt og tjenestelag
 

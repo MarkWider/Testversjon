@@ -4,11 +4,13 @@ import { IndicatorError, getIndicatorData } from './services/indicators'
 
 export default function App() {
   const [state, setState] = useState<IndicatorContentState>({ status: 'loading' })
+  const [request, setRequest] = useState(0)
 
   useEffect(() => {
     let active = true
+    setState({ status: 'loading' })
 
-    getIndicatorData('gdp_per_capita')
+    getIndicatorData('gdp_per_capita', { periodMode: 'all' })
       .then((series) => {
         if (active) setState({ status: 'success', series })
       })
@@ -16,27 +18,34 @@ export default function App() {
         if (!active) return
         const message = error instanceof IndicatorError
           ? error.message
-          : 'Prøv igjen senere.'
+          : 'Vi fikk ikke hentet tallene akkurat nå. Prøv igjen om litt.'
         setState({ status: 'error', message })
       })
 
     return () => {
       active = false
     }
-  }, [])
+  }, [request])
 
   return (
     <main>
+      <header className="site-header">
+        <a className="wordmark" href="#main-content" aria-label="Norge i tall, til innholdet">
+          Norge i tall
+        </a>
+        <p>Data om Norge, forklart</p>
+      </header>
+
       <section className="hero" aria-labelledby="page-title">
-        <p className="eyebrow">AGENT PILOT / 01</p>
-        <h1 id="page-title">Norge i tall</h1>
-        <p className="tagline">Forstå Norges utvikling gjennom data</p>
+        <p className="eyebrow">OKONOMI / INNSIKT</p>
+        <h1 id="page-title">BNP per innbygger</h1>
         <p className="intro">
-          En liten teknisk pilot for å gjøre samfunnsutvikling lettere å se. Her sammenligner vi BNP per innbygger i Norge, Sverige og Danmark over tid.
+          Hvor mye økonomisk verdi skaper Norge per innbygger, og hvordan skiller
+          utviklingen seg fra Sverige og Danmark?
         </p>
       </section>
 
-      <IndicatorContent state={state} />
+      <IndicatorContent state={state} onRetry={() => setRequest((value) => value + 1)} />
     </main>
   )
 }
