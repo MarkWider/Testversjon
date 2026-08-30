@@ -9,7 +9,7 @@ import { formatCompactValue, formatValue } from './formatValue'
 
 echarts.use([GridComponent, LegendComponent, TooltipComponent, LineChart, CanvasRenderer])
 
-const palette = ['#0a5c4e', '#2b6cb0', '#b94b37', '#a97325', '#7557a8']
+const palette = ['#102a43', '#277da1', '#e76f51', '#668c5a', '#7566a8']
 
 type TooltipPoint = {
   axisValue: string
@@ -18,18 +18,25 @@ type TooltipPoint = {
   value: number | null
 }
 
-export function buildIndicatorChartOption(series: IndicatorSeries): EChartsCoreOption {
+type ChartOptions = {
+  latestPeriod?: string
+  reducedMotion?: boolean
+}
+
+export function buildIndicatorChartOption(series: IndicatorSeries, options: ChartOptions = {}): EChartsCoreOption {
   const periods = [...new Set(series.points.map((point) => point.period))]
   const values = new Map(series.points.map((point) => [`${point.region}:${point.period}`, point.value]))
 
   return {
-    animationDuration: 700,
+    animation: !options.reducedMotion,
+    animationDuration: options.reducedMotion ? 0 : 420,
     color: series.regions.map((_, index) => palette[index % palette.length]),
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#14362f',
+      triggerOn: 'mousemove|click',
+      backgroundColor: '#102a43',
       borderWidth: 0,
-      textStyle: { color: '#fbfaf5', fontFamily: 'DM Mono, monospace' },
+      textStyle: { color: '#f7f8f5', fontFamily: 'Inter, sans-serif' },
       padding: [12, 14],
       formatter: (params: unknown) => {
         const points = params as TooltipPoint[]
@@ -41,54 +48,63 @@ export function buildIndicatorChartOption(series: IndicatorSeries): EChartsCoreO
       },
     },
     legend: {
-      top: 4,
-      right: 4,
+      top: 2,
+      right: 0,
       icon: 'circle',
-      itemWidth: 9,
-      itemHeight: 9,
-      itemGap: 20,
-      textStyle: { color: '#426158', fontFamily: 'DM Mono, monospace', fontSize: 12 },
+      itemWidth: 8,
+      itemHeight: 8,
+      itemGap: 16,
+      textStyle: { color: '#52606d', fontFamily: 'Inter, sans-serif', fontSize: 12 },
     },
-    grid: { top: 58, right: 12, bottom: 34, left: 82 },
+    grid: { top: 56, right: 30, bottom: 34, left: 70 },
     xAxis: {
       type: 'category',
       boundaryGap: false,
       data: periods,
-      axisLine: { lineStyle: { color: '#cbd8d0' } },
+      axisLine: { lineStyle: { color: '#cbd5dd' } },
       axisTick: { show: false },
-      axisLabel: { color: '#587067', fontFamily: 'DM Mono, monospace', fontSize: 11 },
+      axisLabel: { color: '#52606d', fontFamily: 'Inter, sans-serif', fontSize: 11, hideOverlap: true },
     },
     yAxis: {
       type: 'value',
       axisLine: { show: false },
       axisTick: { show: false },
-      splitLine: { lineStyle: { color: '#dce6df', type: 'dashed' } },
+      splitLine: { lineStyle: { color: '#dfe5e8', type: 'dashed' } },
       axisLabel: {
-        color: '#587067',
-        fontFamily: 'DM Mono, monospace',
+        color: '#52606d',
+        fontFamily: 'Inter, sans-serif',
         fontSize: 11,
         formatter: (value: number) => formatCompactValue(value, series.unit),
       },
     },
-    series: series.regions.map((region, index) => ({
-      name: region.name,
-      type: 'line',
-      data: periods.map((period) => values.get(`${region.code}:${period}`) ?? null),
-      smooth: 0.28,
-      symbol: 'circle',
-      symbolSize: 7,
-      showSymbol: false,
-      lineStyle: { width: index === 0 ? 3 : 2 },
-      emphasis: { focus: 'series', scale: true },
-    })),
+    series: series.regions.map((region, index) => {
+      const data = periods.map((period) => values.get(`${region.code}:${period}`) ?? null)
+      const latestValue = options.latestPeriod ? values.get(`${region.code}:${options.latestPeriod}`) : null
+      return {
+        name: region.name,
+        type: 'line',
+        data,
+        smooth: 0.18,
+        symbol: 'none',
+        lineStyle: { width: region.code === 'NO' ? 3.5 : 2, type: 'solid' },
+        emphasis: { focus: 'series', lineStyle: { width: region.code === 'NO' ? 4 : 3 } },
+        markPoint: options.latestPeriod && latestValue !== null && latestValue !== undefined
+          ? { symbol: 'circle', symbolSize: region.code === 'NO' ? 10 : 7, data: [{ coord: [options.latestPeriod, latestValue] }] }
+          : undefined,
+        z: index === 0 ? 3 : 2,
+      }
+    }),
   }
 }
 
 type IndicatorChartProps = {
+  descriptionId: string
+  latestPeriod?: string
+  reducedMotion: boolean
   series: IndicatorSeries
 }
 
-export default function IndicatorChart({ series }: IndicatorChartProps) {
+export default function IndicatorChart({ series, latestPeriod, reducedMotion, descriptionId }: IndicatorChartProps) {
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -96,7 +112,7 @@ export default function IndicatorChart({ series }: IndicatorChartProps) {
     if (!container) return
 
     const chart = echarts.init(container, undefined, { renderer: 'canvas' })
-    chart.setOption(buildIndicatorChartOption(series))
+    chart.setOption(buildIndicatorChartOption(series, { latestPeriod, reducedMotion }))
 
     const observer = new ResizeObserver(() => chart.resize())
     observer.observe(container)
@@ -104,14 +120,7 @@ export default function IndicatorChart({ series }: IndicatorChartProps) {
       observer.disconnect()
       chart.dispose()
     }
-  }, [series])
+  }, [series, latestPeriod, reducedMotion])
 
-  return (
-    <div
-      ref={containerRef}
-      className="chart"
-      role="img"
-      aria-label={`Linjegraf for ${series.title}`}
-    />
-  )
+  return <div ref={containerRef} className="chart" role="img" aria-describedby={descriptionId} aria-label={`Linjegraf for ${series.title}`} />
 }

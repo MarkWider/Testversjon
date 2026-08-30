@@ -11,8 +11,8 @@ merget.
 (`NY.GDP.PCAP.CD`, løpende USD) gjennom den uendrede `IndicatorSeries`-kontrakten,
 med pilotvindu 2015–2023 som standard.
 
-`periodMode`-utvidelsen (`claude/period-mode`) ligger som egen PR og er den siste
-tekniske dependencyen før første UX-sprint.
+`periodMode`-utvidelsen er merget (#10). Første UX-sprint er nå under utvikling
+på `codex/gdp-ux-sprint` og bruker hele serien i frontend for periodevelgeren.
 
 ## Completed
 
@@ -31,19 +31,16 @@ tekniske dependencyen før første UX-sprint.
   standard periodevindu 2015–2023, `IndicatorError`-koder bevart fra kilden.
 - Designgrunnlag merget (#9): `docs/DESIGN_SYSTEM.md` — visuelt/redaksjonelt
   system, typografi, UX-arkitektur, interaktiv graf, første UX-sprint.
+- `periodMode` merget (#10): kildeuavhengig `periodMode: 'default' | 'all'` i
+  `getIndicatorData`, uten kontrakt- eller adapterendring.
 
 ## In progress
 
-- `periodMode`-utvidelse (`claude/period-mode`, DEC-008): kildeuavhengig
-  `periodMode: 'default' | 'all'` i `getIndicatorData` slik at frontend kan tilby
-  «Hele perioden» uten å hardkode kildeår. `IndicatorSeries` og adapteren
-  uendret.
+- Første UX-sprint (`codex/gdp-ux-sprint`): BNP-siden omarbeides med
+  datadrevet periodevelger, landvalg og tilgjengelig dataalternativ.
 
 ## Next
 
-- Første UX-sprint (`docs/DESIGN_SYSTEM.md`): Codex omarbeider BNP-siden visuelt
-  og bygger interaktiv graf + periodevalg (10 år / 25 år / Hele perioden) mot
-  `getIndicatorData` + `periodMode`.
 - Deretter neste kilde-lag: SSB (Norge), så Eurostat, så OECD, med resolver og
   fler-kilde-`source` (kontrakt-endring, eget forslag).
 - Koordinert opprydding: `src/data/gdpPerCapita.ts` + `gdpPerCapita.test.ts`

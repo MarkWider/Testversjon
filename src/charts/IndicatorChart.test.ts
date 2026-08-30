@@ -18,14 +18,16 @@ const series: IndicatorSeries = {
 
 describe('buildIndicatorChartOption', () => {
   it('builds periods and display-ordered series from long-format data', () => {
-    const option = buildIndicatorChartOption(series) as {
+    const option = buildIndicatorChartOption(series, { latestPeriod: '2023', reducedMotion: true }) as {
       xAxis: { data: string[] }
-      series: Array<{ name: string; data: Array<number | null> }>
+      animation: boolean
+      series: Array<{ name: string; data: Array<number | null>; markPoint?: unknown }>
     }
 
     expect(option.xAxis.data).toEqual(['2022', '2023'])
+    expect(option.animation).toBe(false)
     expect(option.series).toEqual(expect.arrayContaining([
-      expect.objectContaining({ name: 'Norge', data: [10, 15] }),
+      expect.objectContaining({ name: 'Norge', data: [10, 15], markPoint: expect.anything() }),
       expect.objectContaining({ name: 'Sverige', data: [20, 25] }),
     ]))
   })
