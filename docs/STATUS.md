@@ -2,10 +2,8 @@
 
 ## Current state
 
-Baseline (PR #1) og architecture proposal (PR #2) er merget til `main`.
-`main` er GitHub default branch. Foundation-laget for frontend <-> data-kontrakten
-er implementert paa `claude/indicator-contract-foundation` og ligger som PR mot
-`main` til review.
+Foundation-laget er merget til `main`. Frontend-migreringen til den offentlige
+kontrakten er implementert på `codex/indicator-frontend` og klar for PR-review.
 
 ## Completed
 
@@ -18,24 +16,23 @@ er implementert paa `claude/indicator-contract-foundation` og ligger som PR mot
 - Foundation-lag implementert: `src/contracts/indicator.ts`,
   `src/contracts/validate.ts`, `src/services/indicators.ts`,
   `src/data/sampleSource.ts`, `src/data/sample/gdpPerCapita.ts`, med tester.
+- Frontend bruker nå kun `getIndicatorData()` og `IndicatorSeries`; den direkte
+  importen av `src/data/gdpPerCapita.ts` er fjernet fra App og grafkomponenter.
 
 ## In progress
 
-- Review og merge av foundation-PR (`claude/indicator-contract-foundation`).
+- Review og merge av frontend-PR (`codex/indicator-frontend`).
 
 ## Next
 
-- Codex migrerer frontend til `getIndicatorData` (proposalets Migration, steg
-  3-5) og fjerner den direkte importen av `src/data/gdpPerCapita.ts`.
 - Etter at foundation er merget: forste ekte datakilde-adapter (SSB) i
   `src/adapters/`, bak samme kontrakt.
 
 ## Known issues
 
-- `src/data/gdpPerCapita.ts` finnes fortsatt og importeres av `src/App.tsx` og
-  `src/components/GdpChart.tsx`. Den fjernes naar frontend er migrert til
-  `getIndicatorData`. Sample-verdiene finnes da to steder til migreringen er
-  gjort.
+- `src/data/gdpPerCapita.ts` finnes fortsatt som legacy-sampledata. Den blir ikke
+  lenger importert av frontend og kan slettes av datalag-eier i en koordinert
+  opprydding.
 - `IndicatorError`-kodene `source_unavailable` og `invalid` er definert for
   framtidige adaptere; sample-kilden utloser dem ikke, saa de er kun daekket av
   enhetstest av validatoren, ikke ende-til-ende.

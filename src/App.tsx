@@ -1,9 +1,30 @@
-import GdpChart from './components/GdpChart'
-import { formatUsd, gdpPerCapitaSample } from './data/gdpPerCapita'
-
-const latest = gdpPerCapitaSample.at(-1)!
+import { useEffect, useState } from 'react'
+import IndicatorContent, { type IndicatorContentState } from './components/IndicatorContent'
+import { IndicatorError, getIndicatorData } from './services/indicators'
 
 export default function App() {
+  const [state, setState] = useState<IndicatorContentState>({ status: 'loading' })
+
+  useEffect(() => {
+    let active = true
+
+    getIndicatorData('gdp_per_capita')
+      .then((series) => {
+        if (active) setState({ status: 'success', series })
+      })
+      .catch((error: unknown) => {
+        if (!active) return
+        const message = error instanceof IndicatorError
+          ? error.message
+          : 'Prøv igjen senere.'
+        setState({ status: 'error', message })
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
+
   return (
     <main>
       <section className="hero" aria-labelledby="page-title">
@@ -15,45 +36,7 @@ export default function App() {
         </p>
       </section>
 
-      <section className="visual-section" aria-labelledby="chart-title">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">OVERSIKT</p>
-            <h2 id="chart-title">BNP per innbygger</h2>
-          </div>
-          <p className="unit">USD, løpende priser</p>
-        </div>
-        <GdpChart />
-        <p className="data-notice">Eksempeldata for denne tekniske piloten. Tallene er ikke offisielle statistiske data.</p>
-      </section>
-
-      <section className="findings" aria-labelledby="findings-title">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">LESNING</p>
-            <h2 id="findings-title">Noen enkle funn</h2>
-          </div>
-        </div>
-        <div className="finding-grid">
-          <article>
-            <span>01</span>
-            <p>Norge ligger høyest i hele perioden og hadde den sterkeste oppgangen fra 2020 til 2021.</p>
-          </article>
-          <article>
-            <span>02</span>
-            <p>Danmark ligger over Sverige gjennom hele perioden, med en større avstand etter 2020.</p>
-          </article>
-          <article>
-            <span>03</span>
-            <p>I 2023 er avstanden mellom Norge og de to nabolandene fortsatt stor: {formatUsd(latest.Norge)} mot rundt {formatUsd(latest.Danmark)}.</p>
-          </article>
-        </div>
-      </section>
-
-      <footer>
-        <p><strong>Kilde:</strong> Lokalt eksempeldata, kun for Agent Pilot.</p>
-        <p>Neste steg er en utskiftbar datakildeadapter for offisiell statistikk fra for eksempel SSB, OECD eller Verdensbanken.</p>
-      </footer>
+      <IndicatorContent state={state} />
     </main>
   )
 }
