@@ -1,0 +1,32 @@
+import { describe, expect, it } from 'vitest'
+import type { IndicatorSeries } from '../contracts/indicator'
+import { buildIndicatorChartOption } from './IndicatorChart'
+
+const series: IndicatorSeries = {
+  indicator: 'example',
+  title: 'Eksempelindikator',
+  unit: { code: 'count', display: 'number' },
+  source: { id: 'sample', label: 'Eksempel', official: false },
+  regions: [{ code: 'NO', name: 'Norge' }, { code: 'SE', name: 'Sverige' }],
+  points: [
+    { region: 'NO', period: '2022', value: 10 },
+    { region: 'SE', period: '2022', value: 20 },
+    { region: 'NO', period: '2023', value: 15 },
+    { region: 'SE', period: '2023', value: 25 },
+  ],
+}
+
+describe('buildIndicatorChartOption', () => {
+  it('builds periods and display-ordered series from long-format data', () => {
+    const option = buildIndicatorChartOption(series) as {
+      xAxis: { data: string[] }
+      series: Array<{ name: string; data: Array<number | null> }>
+    }
+
+    expect(option.xAxis.data).toEqual(['2022', '2023'])
+    expect(option.series).toEqual(expect.arrayContaining([
+      expect.objectContaining({ name: 'Norge', data: [10, 15] }),
+      expect.objectContaining({ name: 'Sverige', data: [20, 25] }),
+    ]))
+  })
+})
