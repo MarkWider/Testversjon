@@ -2,7 +2,12 @@
 
 ## Frontend
 
-Vite serverer en enkel React/TypeScript-enkeltside. `src/App.tsx` eier sidens innhold og komposisjon, mens `src/components/GdpChart.tsx` isolerer ECharts-integrasjonen.
+Vite serverer en enkel React/TypeScript-enkeltside. `src/App.tsx` henter én
+indikator gjennom den offentlige `getIndicatorData()`-tjenesten og presenterer
+loading-, feil- og suksess-tilstander. `src/charts/IndicatorChart.tsx` oversetter
+en `IndicatorSeries` i long format til en responsiv ECharts-linjegraf uten å
+kjenne den konkrete datakilden. `src/charts/formatValue.ts` formaterer tall fra
+`IndicatorUnit`-metadata.
 
 ## Datakontrakt og tjenestelag
 
@@ -27,8 +32,8 @@ utvikles parallelt. Fire mapper:
   injiserbar `fetchJson`.
 
 `src/data/gdpPerCapita.ts` (bred `GdpObservation[]`-form) beholdes midlertidig
-fordi komponentene fortsatt importerer den direkte; den fjernes når frontend er
-migrert til `getIndicatorData`.
+som legacy-data og testgrunnlag. Frontend importerer den ikke lenger; den kan
+fjernes av datalag-eier når migreringen er koordinert ferdig.
 
 ## Datakilder
 
@@ -39,11 +44,11 @@ migrert til `getIndicatorData`.
 `value`, `meta.lastupdated` → `source.fetchedAt`. Ukjente land droppes; `points`
 sorteres.
 
-Adapteren er **ikke** aktiv default ennå — `sampleSource` står bak
-`getIndicatorData` til frontend-migrering og adapter er merget hver for seg.
-Senere kilder (SSB, Eurostat, OECD) legges til på samme måte, med en resolver som
-velger kilde per region. Piloten bygger ikke ETL, database, caching eller
-backend.
+Adapteren er **ikke** aktiv default ennå — `sampleSource` står fortsatt bak
+`getIndicatorData`. Et separat aktiveringssteg bytter default til
+`worldBankSource` etter at adapter-PR-en er merget. Senere kilder (SSB, Eurostat,
+OECD) legges til på samme måte, med en resolver som velger kilde per region.
+Piloten bygger ikke ETL, database, caching eller backend.
 
 ## Visualisering
 
