@@ -1,30 +1,14 @@
 // The bundled sample data source.
 //
-// `IndicatorSource` is the internal seam between the service and a concrete
-// source. It is NOT part of the frontend-facing contract. A future SSB / OECD /
-// Eurostat adapter implements this same interface and returns the same
-// `IndicatorSeries` shape.
-//
-// No registry yet: the service talks to `sampleSource` directly. Promote
-// `IndicatorSource` to its own module and add selection logic when the first
-// real adapter lands (docs/proposals/data-contract.md: registry is optional for
-// step 1).
+// Implements the internal `IndicatorSource` seam (src/data/source.ts). It is the
+// active default behind `getIndicatorData` until a real adapter is wired in.
 
-import type {
-  GetIndicatorOptions,
-  IndicatorId,
-  IndicatorSeries,
-} from '../contracts/indicator'
+import type { IndicatorSeries } from '../contracts/indicator'
+import { withinPeriodRange } from './period'
+import type { IndicatorSource } from './source'
 import { gdpPerCapitaSampleSeries } from './sample/gdpPerCapita'
 
-export interface IndicatorSource {
-  readonly id: string
-  /** Return the series, or null if this source does not provide `id`. */
-  fetch(
-    id: IndicatorId,
-    options?: GetIndicatorOptions,
-  ): Promise<IndicatorSeries | null>
-}
+export type { IndicatorSource } from './source'
 
 const SERIES_BY_ID: Record<string, IndicatorSeries> = {
   [gdpPerCapitaSampleSeries.indicator]: gdpPerCapitaSampleSeries,
@@ -39,14 +23,6 @@ function clone(series: IndicatorSeries): IndicatorSeries {
     regions: series.regions.map((r) => ({ ...r })),
     points: series.points.map((p) => ({ ...p })),
   }
-}
-
-// String comparison is correct for ISO 8601 periods at a single granularity
-// (the sample is yearly). Mixed-granularity ranges are out of scope here.
-function withinRange(period: string, from?: string, to?: string): boolean {
-  if (from !== undefined && period < from) return false
-  if (to !== undefined && period > to) return false
-  return true
 }
 
 export const sampleSource: IndicatorSource = {
@@ -66,7 +42,7 @@ export const sampleSource: IndicatorSource = {
 
     if (options?.from !== undefined || options?.to !== undefined) {
       series.points = series.points.filter((p) =>
-        withinRange(p.period, options?.from, options?.to),
+        withinPeriodRange(p.period, options?.from, options?.to),
       )
     }
 

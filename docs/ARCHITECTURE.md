@@ -22,23 +22,33 @@ utvikles parallelt. Fire mapper:
   (periode stigende, deretter `regions`-rekkefølge) og at svaret er validert mot
   kontrakten. Kaster `IndicatorError` med `code` `not_found | source_unavailable
   | invalid`.
-- `src/data/` — konkrete datasett og sample-kilden. `sampleSource` uttrykker
-  dagens eksempeldata i kontraktform og implementerer det interne
-  `IndicatorSource`-grensesnittet.
-- `src/adapters/` — én modul per ekstern kilde (SSB, OECD, Eurostat,
-  Verdensbanken) som normaliserer til `contracts/`. Opprettes først ved ekte
-  integrasjon.
+- `src/data/` — konkrete datasett og sample-kilden. `source.ts` definerer det
+  interne `IndicatorSource`-grensesnittet (implementeres av `sampleSource` og
+  hver adapter); `period.ts` har delte periode-hjelpere (range-filter, sortering).
+- `src/adapters/` — én modul per ekstern kilde som normaliserer upstream-format
+  til `IndicatorSeries`. Første adapter: `worldBank.ts` (World Bank
+  `NY.GDP.PCAP.CD`). Adapterne eksponerer rene `parse` + `normalize`-funksjoner
+  for deterministisk testing, pluss en `IndicatorSource`-innpakning med
+  injiserbar `fetchJson`.
 
 `src/data/gdpPerCapita.ts` (bred `GdpObservation[]`-form) beholdes midlertidig
 som legacy-data og testgrunnlag. Frontend importerer den ikke lenger; den kan
 fjernes av datalag-eier når migreringen er koordinert ferdig.
 
-## Fremtidig offisiell datakilde
+## Datakilder
 
-En senere adapter i `src/adapters/` henter fra SSB, OECD, Eurostat eller
-Verdensbanken, normaliserer til `IndicatorSeries`, og settes inn bak
-`getIndicatorData` uten at kontrakten eller frontend endres. Denne piloten bygger
-ikke ETL, database, caching eller backend.
+`src/adapters/worldBank.ts` henter fra
+`https://api.worldbank.org/v2/country/{iso3;iso3}/indicator/{code}?format=json`
+(ingen nøkkel, CORS) og normaliserer til `IndicatorSeries`: `countryiso3code` →
+`RegionCode` via en fast tabell, `date` → `period`, `value` (kan være `null`) →
+`value`, `meta.lastupdated` → `source.fetchedAt`. Ukjente land droppes; `points`
+sorteres.
+
+Adapteren er **ikke** aktiv default ennå — `sampleSource` står fortsatt bak
+`getIndicatorData`. Et separat aktiveringssteg bytter default til
+`worldBankSource` etter at adapter-PR-en er merget. Senere kilder (SSB, Eurostat,
+OECD) legges til på samme måte, med en resolver som velger kilde per region.
+Piloten bygger ikke ETL, database, caching eller backend.
 
 ## Visualisering
 
