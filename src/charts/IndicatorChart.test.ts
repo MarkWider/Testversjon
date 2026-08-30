@@ -31,4 +31,20 @@ describe('buildIndicatorChartOption', () => {
       expect.objectContaining({ name: 'Sverige', data: [20, 25] }),
     ]))
   })
+
+  it('uses the supplied last observed period for endpoint markers', () => {
+    const withTrailingNulls: IndicatorSeries = {
+      ...series,
+      points: [
+        ...series.points,
+        { region: 'NO', period: '2024', value: null },
+        { region: 'SE', period: '2024', value: null },
+      ],
+    }
+    const option = buildIndicatorChartOption(withTrailingNulls, { latestPeriod: '2023', reducedMotion: true }) as {
+      series: Array<{ markPoint?: { data: Array<{ coord: [string, number] }> } }>
+    }
+
+    expect(option.series[0].markPoint?.data[0].coord).toEqual(['2023', 15])
+  })
 })

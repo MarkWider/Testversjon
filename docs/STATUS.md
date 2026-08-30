@@ -36,7 +36,7 @@ på `codex/gdp-ux-sprint` og bruker hele serien i frontend for periodevelgeren.
 
 ## In progress
 
-- Første UX-sprint (`codex/gdp-ux-sprint`): BNP-siden omarbeides med
+- Første UX-sprint (PR #11, `codex/gdp-ux-sprint`): BNP-siden omarbeides med
   datadrevet periodevelger, landvalg og tilgjengelig dataalternativ.
 
 ## Next
