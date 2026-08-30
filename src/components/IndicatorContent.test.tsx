@@ -29,9 +29,9 @@ const series = createSeries()
 
 describe('period selection', () => {
   it('uses the last 10 or 25 observed periods without calendar-year knowledge', () => {
-    expect(selectRecentPeriods(series.points, 10)).toEqual(['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'])
-    expect(selectRecentPeriods(series.points, 25)).toEqual(Array.from({ length: 25 }, (_, index) => String(2001 + index)))
-    expect(selectRecentPeriods(series.points, 'all')).toEqual([...Array.from({ length: 30 }, (_, index) => String(1995 + index)), '2025'])
+    expect(selectRecentPeriods(series.points, 10)).toEqual(Array.from({ length: 10 }, (_, index) => String(2015 + index)))
+    expect(selectRecentPeriods(series.points, 25)).toEqual(Array.from({ length: 25 }, (_, index) => String(2000 + index)))
+    expect(selectRecentPeriods(series.points, 'all')).toEqual(Array.from({ length: 30 }, (_, index) => String(1995 + index)))
   })
 
   it('filters periods and comparison countries while keeping Norway visible', () => {
@@ -39,6 +39,18 @@ describe('period selection', () => {
     expect(filtered.regions.map((region) => region.code)).toEqual(['NO', 'DK'])
     expect(filtered.points.every((point) => point.region === 'NO' || point.region === 'DK')).toBe(true)
     expect(new Set(filtered.points.map((point) => point.period))).toHaveLength(10)
+    expect(new Set(filtered.points.map((point) => point.period))).toEqual(new Set(Array.from({ length: 10 }, (_, index) => String(2015 + index))))
+  })
+
+  it('does not count data from hidden countries as an active observed period', () => {
+    const withDenmarkOnlyInTail = createSeries()
+    withDenmarkOnlyInTail.points = withDenmarkOnlyInTail.points.map((point) => point.period === '2025' && point.region === 'DK'
+      ? { ...point, value: 55_000 }
+      : point)
+
+    const filtered = filterSeries(withDenmarkOnlyInTail, 10, new Set(['NO', 'SE']))
+    expect(new Set(filtered.points.map((point) => point.period))).toEqual(new Set(Array.from({ length: 10 }, (_, index) => String(2015 + index))))
+    expect(filtered.points.some((point) => point.period === '2025')).toBe(false)
   })
 
   it('uses the last valid observed period when a trailing period has only null values', () => {
@@ -79,6 +91,19 @@ describe('data-derived findings', () => {
       : point.region === 'NO' ? { ...point, value: 100_000 } : point)
 
     expect(buildFindings(norwayLeads, 'all').heading).toBe('Norge ligger gjennomgående høyest')
+  })
+
+  it('does not treat a period with one valid country as proof of a consistent lead', () => {
+    const insufficientComparison: IndicatorSeries = {
+      ...createSeries(),
+      points: [
+        { period: '2024', region: 'NO', value: 100_000 },
+        { period: '2024', region: 'SE', value: null },
+        { period: '2024', region: 'DK', value: null },
+      ],
+    }
+
+    expect(buildFindings(insufficientComparison, 'all').heading).toBe('Norge ligger høyest i siste observerte år')
   })
 })
 

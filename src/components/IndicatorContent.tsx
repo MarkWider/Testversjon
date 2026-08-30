@@ -17,16 +17,17 @@ const periodLabels: Array<{ value: PeriodSelection; label: string }> = [
 ]
 
 export function selectRecentPeriods(points: IndicatorSeries['points'], selection: PeriodSelection) {
-  const periods = [...new Set(points.map((point) => point.period))].sort()
+  const periods = [...new Set(points.filter((point) => point.value !== null).map((point) => point.period))].sort()
   return selection === 'all' ? periods : periods.slice(-selection)
 }
 
 export function filterSeries(series: IndicatorSeries, selection: PeriodSelection, visibleCodes: ReadonlySet<RegionCode>): IndicatorSeries {
-  const periods = new Set(selectRecentPeriods(series.points, selection))
+  const visiblePoints = series.points.filter((point) => visibleCodes.has(point.region))
+  const periods = new Set(selectRecentPeriods(visiblePoints, selection))
   return {
     ...series,
     regions: series.regions.filter((region) => visibleCodes.has(region.code)),
-    points: series.points.filter((point) => periods.has(point.period) && visibleCodes.has(point.region)),
+    points: visiblePoints.filter((point) => periods.has(point.period)),
   }
 }
 
@@ -70,11 +71,13 @@ export function buildFindings(series: IndicatorSeries, periodSelection: PeriodSe
   const rangeLabel = periodSelection === 'all' ? 'hele tilgjengelige perioden' : 'de siste ' + periodSelection + ' observerte årene'
   const regionName = (code: string) => series.regions.find((region) => region.code === code)?.name ?? code
   const periods = selectRecentPeriods(series.points, 'all')
-  const observedPeriods = periods.filter((period) => series.points.some((point) => point.period === period && point.value !== null))
-  const comparableLeaders = observedPeriods.map((period) => highestValue(series.regions.map((region) => {
-    const point = series.points.find((candidate) => candidate.period === period && candidate.region === region.code)
-    return { region: region.code, value: point?.value ?? null }
-  })))
+  const comparableLeaders = periods
+    .map((period) => series.regions.map((region) => {
+      const point = series.points.find((candidate) => candidate.period === period && candidate.region === region.code)
+      return { region: region.code, value: point?.value ?? null }
+    }))
+    .filter((values) => values.filter((value) => value.value !== null).length >= 2)
+    .map(highestValue)
   const hasComparableHistory = comparableLeaders.every(Boolean)
   const consistentLeader = hasComparableHistory && comparableLeaders.length > 0
     && comparableLeaders.every((leader) => leader?.region === comparableLeaders[0]?.region)
