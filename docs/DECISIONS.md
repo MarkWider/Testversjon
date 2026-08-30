@@ -111,3 +111,29 @@ Consequences:
 `src/contracts/` senere (ikke-brytende). For World Bank kan bli default ma
 `getIndicatorData` slippe gjennom `IndicatorError` fra kilden i stedet for a pakke
 alt som `source_unavailable`.
+
+## DEC-007
+
+Decision:
+Aktiver World Bank-adapteren som kilde for `gdp_per_capita` i `getIndicatorData`.
+Standard periodevindu er 2015-2023 nar caller ikke oppgir `from`/`to` (fylles per
+grense; eksplisitte verdier vinner alltid). `getIndicatorData` sender
+`IndicatorError` fra kilden videre uendret; kun ukjente feil oversettes til
+`source_unavailable`.
+
+Reason:
+Piloten skal vise ekte offentlige tall. `NY.GDP.PCAP.CD` dekker NO/SE/DK i
+lopende USD og passer dagens `IndicatorSeries`-kontrakt uten frontend-endring.
+2015-2023 bevarer pilotens navaerende visuelle omfang (World Bank uten range gir
+ellers hele historikken, ~1960-).
+
+Alternatives:
+Beholde `sampleSource`; aktivere uten default-vindu.
+
+Consequences:
+`NY.GDP.PCAP.CD` er valgt for den *tekniske* piloten, ikke som endelig metodisk
+produktindikator. `sampleSource` og `src/data/sample/gdpPerCapita.ts` beholdes i
+koden (ikke lenger koblet inn i `getIndicatorData`) for reversibilitet. Ingen
+registry/resolver/caching/config - neste kilde-lag (SSB m.fl.) er egne PR-er.
+`getIndicatorData` kaller `worldBankSource`, som ved runtime bruker global
+`fetch`; tester stubber `fetch` mot den fangede fixturen.

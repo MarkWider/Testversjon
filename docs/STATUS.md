@@ -2,62 +2,55 @@
 
 ## Current state
 
-Baseline (#1), data-kontrakt-proposal (#2), foundation-laget (#3) og
-frontend-migreringen (#4) er merget til `main`. `main` er nå den generelle
-løsningen: frontend konsumerer `getIndicatorData()` / `IndicatorSeries` via en
-generisk `IndicatorChart` med loading-, error- og success-tilstander, og
-importerer ikke lenger legacy `src/data/gdpPerCapita.ts`.
+Baseline (#1), data-kontrakt-proposal (#2), foundation-laget (#3),
+frontend-migreringen (#4) og World Bank-adapteren (#5) er merget til `main`.
 
-World Bank-adapteren (PR #5, `claude/world-bank-adapter`) er implementert bak
-kontrakten og klar for review/merge. Den er **ikke** aktivert som default source.
+`getIndicatorData('gdp_per_capita')` serveres nå av **World Bank**
+(`NY.GDP.PCAP.CD`, løpende USD) gjennom den uendrede `IndicatorSeries`-kontrakten.
+Aktiveringen ligger som egen PR (`claude/world-bank-activation`).
 
 ## Completed
 
 - React/TypeScript/ECharts-baseline merget (#1).
-- Uavhengig Claude-review av baseline: PASS etter tre blocker-fikser, verifisert
-  med reell `pnpm install` / `test` / `build`.
-- Data-kontrakt-proposal godkjent av Codex (APPROVE) og merget (#2,
-  `docs/proposals/data-contract.md`).
+- Uavhengig Claude-review av baseline: PASS etter tre blocker-fikser.
+- Data-kontrakt-proposal godkjent av Codex (APPROVE) og merget (#2).
 - Foundation-lag merget (#3): `src/contracts/`, `src/services/getIndicatorData`,
   `sampleSource`, med tester.
 - Frontend-migrering merget (#4): App og grafkomponenter bruker kun
   `getIndicatorData()` / `IndicatorSeries`; generisk `IndicatorChart`,
-  `formatValue(value, unit)`, og loading/error/success-tilstander; den gamle
-  `GdpChart` og den direkte importen av `src/data/gdpPerCapita.ts` er fjernet fra
-  frontend. Claude cross-review: APPROVE.
-- World Bank-adapter implementert bak kontrakten (`src/adapters/worldBank.ts`),
-  med fixture-baserte tester og live-API-verifikasjon (PR #5). Ikke aktivert.
+  `formatValue(value, unit)`, loading/error/success-tilstander; gammel `GdpChart`
+  og direkte `src/data/gdpPerCapita.ts`-import fjernet fra frontend.
+  Claude cross-review: APPROVE.
+- World Bank-adapter merget (#5): `src/adapters/worldBank.ts` bak kontrakten,
+  fixture-baserte tester + live-API-verifikasjon.
+- World Bank aktivert som kilde for `gdp_per_capita` (denne PR-en, DEC-007):
+  standard periodevindu 2015–2023, `IndicatorError`-koder bevart fra kilden.
 
 ## In progress
 
-- Review + merge av World Bank-adapter-PR (`claude/world-bank-adapter`, #5).
+- Review + merge av aktiverings-PR (`claude/world-bank-activation`).
 
 ## Next
 
-- Separat aktiverings-PR: bytt default source i `getIndicatorData` fra
-  `sampleSource` til `worldBankSource` (eller config-styrt), etter at #5 er
-  merget. Krever også at `getIndicatorData` slipper gjennom `IndicatorError` fra
-  kilden, og en beslutning om standard periode-vindu (World Bank uten range
-  henter ~1960–2023).
-- Deretter neste kilde-lag: SSB (Norge), så Eurostat, så OECD, med resolver og
+- Neste kilde-lag: SSB (Norge), så Eurostat, så OECD, med resolver og
   fler-kilde-`source` (kontrakt-endring, eget forslag).
 - Koordinert opprydding: `src/data/gdpPerCapita.ts` + `gdpPerCapita.test.ts`
   fjernes av datalag-eier (ikke lenger importert av produksjonskode).
+  `sampleSource` beholdes så lenge den er nyttig for test/reversibilitet.
 
 ## Known issues
 
-- `src/data/gdpPerCapita.ts` finnes fortsatt som legacy-sampledata, men importeres
-  ikke lenger av frontend — bare av sin egen test. Fjernes i en koordinert
-  opprydding.
-- Før World Bank kan aktiveres: `getIndicatorData` må slippe gjennom
-  `IndicatorError` fra kilden i stedet for å pakke alt som `source_unavailable`
-  (bare catch-blokk i `src/services/indicators.ts`).
-- `worldBankSource` bruker global `fetch` ved runtime. Ved en senere build-time
-  snapshot injiseres `fetchJson` via `createWorldBankSource({ fetchJson })`.
+- `src/data/gdpPerCapita.ts` finnes fortsatt som legacy-sampledata (bare importert
+  av sin egen test). Fjernes i en koordinert opprydding.
+- `sampleSource` er ikke lenger koblet inn i `getIndicatorData`, men beholdt i
+  koden for reversibilitet.
+- `worldBankSource` bruker global `fetch` ved runtime. Tester stubber `fetch`.
+  En senere build-time snapshot injiserer `fetchJson` via
+  `createWorldBankSource({ fetchJson })`.
 - `source.fetchedAt` fra World Bank er kildens `lastupdated` (dato, ikke
-  klokkeslett) — bevisst valg for determinisme i en snapshot-pipeline.
+  klokkeslett) — bevisst valg for determinisme.
 - Lokal runtime er Node 24.19.0 LTS + pnpm 11.19.0 (via Corepack).
 
 ## Recommended model for next task
 
-Claude Sonnet 5, HIGH for aktiverings-PR og deretter SSB-adapter / resolver.
+Claude Sonnet 5, HIGH for SSB-adapter, resolver og fler-kilde-normalisering.

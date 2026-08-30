@@ -44,11 +44,16 @@ fjernes av datalag-eier når migreringen er koordinert ferdig.
 `value`, `meta.lastupdated` → `source.fetchedAt`. Ukjente land droppes; `points`
 sorteres.
 
-Adapteren er **ikke** aktiv default ennå — `sampleSource` står fortsatt bak
-`getIndicatorData`. Et separat aktiveringssteg bytter default til
-`worldBankSource` etter at adapter-PR-en er merget. Senere kilder (SSB, Eurostat,
-OECD) legges til på samme måte, med en resolver som velger kilde per region.
-Piloten bygger ikke ETL, database, caching eller backend.
+**`worldBankSource` er den aktive kilden for `gdp_per_capita`** (DEC-007).
+`getIndicatorData` legger på et standard periodevindu 2015–2023 per grense når
+caller ikke oppgir `from`/`to`, og sender `IndicatorError` fra kilden videre med
+uendret `code` (kun ukjente feil blir `source_unavailable`). `sampleSource` og
+`src/data/sample/gdpPerCapita.ts` beholdes i koden for reversibilitet, men er ikke
+lenger koblet inn.
+
+Senere kilder (SSB, Eurostat, OECD) legges til på samme måte, med en resolver som
+velger kilde per region. Piloten bygger ikke ETL, database, caching eller backend.
+`NY.GDP.PCAP.CD` er en pilot-indikator, ikke et endelig metodisk produktvalg.
 
 ## Visualisering
 
