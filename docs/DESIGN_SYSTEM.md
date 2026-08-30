@@ -225,12 +225,244 @@ Den redaksjonelle stemmen brukes i:
 Navigasjon, knapper, filtre, kildehenvisninger og feilmeldinger skal være enda
 enklere og mer funksjonelle, uten redaksjonell stilisering.
 
+## UX- og innholdsretning
+
+### Referanser og egen retning
+
+Norge i tall kombinerer:
+
+- **USAFacts:** ro, struktur, tydelige temaområder og sterke redaksjonelle
+  innganger.
+- **Sverige i siffror:** store datavisualiseringer, grafen som sentralt innhold
+  og redaksjonell presentasjon av data.
+- **Norge i tall:** et mer premium nordisk designsystem, strengere
+  informasjonshierarki og en tydelig redaksjonell stemme.
+
+Referansene skal brukes som prinsipper, ikke kopieres som layouts eller
+komponenter.
+
+### Lite på skjermen, mye under overflaten
+
+Første møte skal være luftig og enkelt. Brukeren skal raskt forstå:
+
+1. hvilket tema siden handler om
+2. hva som er viktigst å forstå
+3. hvilken graf eller innsikt som bør sees først
+4. hvor man kan gå videre
+
+Kompleksitet kan ligge lenger ned på siden eller bak tydelig interaksjon. Unngå
+at mange KPI-er, filtre, grafer og bokser konkurrerer samtidig.
+
+### Temastruktur
+
+Temaområdene er nettstedets hovedarkitektur. Foreløpige hovedtemaer:
+
+- Befolkning
+- Økonomi
+- Offentlige finanser / statsbudsjett
+- Arbeid
+- Utdanning
+- Helse
+- Levekår
+- Kriminalitet og trygghet
+- Klima, energi og natur
+
+Hierarkiet er:
+
+**Tema → undertema → indikator / innsikt**
+
+Eksempel for Økonomi:
+
+- Verdiskaping
+- Produktivitet
+- Inflasjon og kjøpekraft
+- Arbeidsmarked
+- Handel
+- BNP per innbygger
+
+Brukeren skal alltid forstå hvor innholdet hører hjemme og hvordan man finner
+tilbake. Temastrukturen er stabil selv om innholdet presenteres redaksjonelt.
+
+### Temasider: oversikt og historier
+
+En temaside er ikke en liste over indikatorer. Den skal først definere området
+og spørsmålene siden forsøker å besvare, deretter gi noen få sterke innganger.
+
+Eksempel:
+
+> ## Økonomi
+>
+> **Hvordan utvikler norsk økonomi seg – og blir vi faktisk rikere?**
+>
+> Kort introduksjon som forklarer området og spørsmålene siden skal hjelpe
+> brukeren å forstå.
+
+Mulige innganger:
+
+- **Blir Norge rikere?** BNP per innbygger og langsiktig økonomisk vekst.
+- **Får folk bedre råd?** Lønninger, inflasjon og disponibel inntekt.
+- **Hvor produktive er vi?** Verdi skapt per arbeidstime.
+- **Hvor mange er i arbeid?** Sysselsetting, ledighet og arbeidstimer.
+
+### Grafer som hovedinnhold
+
+Grafen skal ofte være det første store visuelle elementet:
+
+**Overskrift → kort forklaring → stor graf**
+
+Som hovedregel:
+
+- vis én tydelig hovedgraf om gangen
+- gi grafen nok plass til at utviklingen kan forstås visuelt
+- bruk få farger og lite grid/støy
+- fremhev Norge tydelig
+- bruk direkte etiketter når det er mer lesbart enn en legend
+- marker siste tilgjengelige observasjon
+- gjør kilde og definisjon lett tilgjengelig
+- bruk interaktivitet for å skape forståelse, ikke som dekorasjon
+- sørg for at standardvisningen allerede forteller en historie
+
+### Interaktivitet er en kjernefunksjon
+
+Grafene skal ikke være statiske illustrasjoner. Brukeren skal kunne undersøke
+hvordan bildet endrer seg når sentrale forutsetninger eller visninger justeres.
+
+Der det er relevant skal brukeren enkelt kunne:
+
+- velge tidsperiode, eksempelvis 10 år, 25 år eller hele tilgjengelige perioden
+- legge til eller fjerne sammenligningsland
+- vise eller skjule politiske perioder
+- se eksakte verdier og metadata ved hover eller tastaturfokus
+- fremheve eller isolere en serie
+- åpne underliggende data
+- lese definisjon, metode og kilde
+- laste ned data når datagrunnlaget er klart for det
+
+Interaksjon skal gi umiddelbar og forståelig visuell respons. Valg skal ha tydelig
+aktiv tilstand, og brukeren skal lett kunne gå tilbake til standardvisningen.
+
+Interaksjonsregler:
+
+- behold akser, enheter og kontekst når visningen endres
+- unngå kontroller som endrer grafen uten at endringen er tydelig
+- bruk progressive valg: vis de viktigste kontrollene først, legg avanserte valg
+  bak «Flere valg» eller tilsvarende
+- på mobil erstattes hover med trykk/fokus og store nok treffflater
+- alle sentrale grafhandlinger skal kunne brukes med tastatur
+- animasjon mellom tilstander skal hjelpe brukeren å forstå endringen, ikke
+  forsinke arbeidet
+- URL eller annen persistens for valgte visninger vurderes senere når deling blir
+  en faktisk funksjon
+
+### Graf og redaksjonell konklusjon
+
+Leseren skal ikke måtte analysere grafen helt alene. Ved siden av eller under
+grafen vises normalt:
+
+> ### Hva viser dette?
+>
+> **Én kort konklusjon som uttrykker hovedfunnet.**
+>
+> To til fire setninger som skiller mellom hva tallene viser, sannsynlige
+> forklaringer og reell usikkerhet.
+
+Konklusjonen må enten være gyldig for standardvisningen eller oppdateres når
+brukeren endrer grafen. En statisk tekst skal ikke motsi den aktive visningen.
+
+### Redaksjonelle kort
+
+Redaksjonelle kort skaper nysgjerrighet og leder til historier eller innsikter.
+De består normalt av:
+
+1. bilde eller datadrevet illustrasjon
+2. kort kategori
+3. interessant, forklarende overskrift
+4. én kort teaser
+
+Foretrekk:
+
+> **Hvorfor blir Norge stadig eldre?**
+
+fremfor:
+
+> Alderssammensetning 1980–2050
+
+Kortene skal være redaksjonelle innganger, ikke en alternativ KPI-matrise.
+
+### Bilder
+
+Bilder skal:
+
+- ha et tydelig og enkelt motiv
+- fungere som små thumbnails
+- følge en konsekvent fotografisk stil
+- harmonere med fargepaletten
+- unngå generiske og tilfeldige stockbilder
+- kunne få en svak, tematilpasset fargetone uten at motivet blir kunstig
+
+En samling med ulike motiver skal fortsatt oppleves som én publikasjon.
+
+### Datakort og nøkkeltall
+
+Ikke gjør alle kort til KPI-kort. Et nøkkeltall bør normalt vise både nivå og
+retning, eksempelvis:
+
+- aktuell verdi
+- liten sparkline
+- endring over en relevant periode
+- tydelig enhet og periode
+
+Kontekst er viktigere enn antall KPI-er.
+
+## Informasjonshierarki
+
+| Nivå | Mål | Typisk innhold |
+|---|---|---|
+| 1 – Forstå på fem sekunder | Få hovedpoenget | Overskrift, hovedpoeng og hovedgraf |
+| 2 – Forstå utviklingen | Se mønster og kontekst | Kort forklaring, sammenligning og få visualiseringer |
+| 3 – Utforske | Undersøke alternative visninger | Land, perioder, regioner og relaterte indikatorer |
+| 4 – Etterprøve | Kontrollere grunnlaget | Definisjon, metode, kilde, tabell og rådata |
+
+En vanlig leser skal få verdi på nivå 1–2. Journalister, analytikere og særlig
+interesserte skal kunne gå videre til nivå 3–4.
+
+## BNP per innbygger: referanseside for første UX-runde
+
+Den første BNP-siden skal demonstrere designprinsippene i liten skala.
+
+### Foreslått rekkefølge
+
+1. **Tittel:** BNP per innbygger
+2. **Ingress:** Hvor mye økonomisk verdi skaper Norge per innbygger – og hvordan
+   har det utviklet seg over tid?
+3. **Stor interaktiv hovedgraf**
+4. **Hva viser dette?** Kort konklusjon og kontekst
+5. **Hvordan ligger Norge an mot andre land?** Sammenligningsvisning
+6. **Hva driver utviklingen?** Bare dersom analysen og datagrunnlaget støtter det
+7. **Relaterte historier:** to til fire redaksjonelle kort
+8. **Om tallene:** definisjon, kilde, metode, sist oppdatert og dataadgang
+
+### Kontroller ved hovedgrafen
+
+- **Periode:** 10 år | 25 år | Hele tilgjengelige perioden
+- **Sammenlign med:** Sverige | Danmark | senere OECD eller andre relevante land
+- **Politisk kontekst:** Vis/skjul politiske perioder
+- **Detaljer:** hover/fokus for eksakte verdier
+- **Etterprøvbarhet:** kilde, definisjon og underliggende data
+
+Årstall skal komme fra faktisk tilgjengelig datagrunnlag. Designskisser kan vise
+målbildet, men produksjonsvisningen må ikke antyde data frem til et år kilden
+ikke leverer. Dagens World Bank-pilot bruker 2015–2023 som standard, mens
+tjenestelaget allerede støtter eksplisitte periodevalg.
+
+Den første implementasjonen trenger ikke bygge hele temasiden eller alle fire
+informasjonsnivåer. Den skal først bevise at én stor graf kan være både
+redaksjonelt tydelig og reelt interaktiv på desktop og mobil.
+
 ## Åpne deler
 
 Følgende legges til før dokumentet brukes som komplett implementeringsgrunnlag:
 
-- innholdshierarki og sidestruktur
 - komponentregler
-- graf- og interaksjonsdetaljer
 - responsive regler
 - tilgjengelighetskrav
