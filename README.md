@@ -9,15 +9,15 @@ En liten React-applikasjon og samarbeids-pilot for AI-basert produktutvikling. D
 Krever Node.js 20 eller nyere.
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
-Kjor tester og produksjonsbygg:
+Kjør tester og produksjonsbygg:
 
 ```bash
-npm test
-npm run build
+pnpm test
+pnpm build
 ```
 
 ## Stack

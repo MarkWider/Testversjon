@@ -37,11 +37,11 @@ export default function App() {
         <div className="finding-grid">
           <article>
             <span>01</span>
-            <p>Norge ligger høyest i hele perioden og hadde den sterkeste oppgangen i 2021-2022.</p>
+            <p>Norge ligger høyest i hele perioden og hadde den sterkeste oppgangen fra 2020 til 2021.</p>
           </article>
           <article>
             <span>02</span>
-            <p>Danmark henter inn Sverige etter 2020 og ligger høyere i de siste observasjonene.</p>
+            <p>Danmark ligger over Sverige gjennom hele perioden, med en større avstand etter 2020.</p>
           </article>
           <article>
             <span>03</span>
