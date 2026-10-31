@@ -40,6 +40,8 @@ const SOURCE_LABEL = 'Statistisk sentralbyrå'
 const DIM_GROUP = 'VareTjenesteGrp'
 const DIM_CONTENTS = 'ContentsCode'
 const DIM_TIME = 'Tid'
+/** The exact dimension set the adapter's request selects and validates. */
+const EXPECTED_DIMENSIONS: readonly string[] = [DIM_GROUP, DIM_CONTENTS, DIM_TIME]
 
 interface SsbIndicatorSpec {
   /** SSB table id, e.g. "14701". */
@@ -69,6 +71,14 @@ export const SSB_INDICATORS: Record<string, SsbIndicatorSpec> = {
     subtitle: 'Årsgjennomsnitt, indeksnivå',
     unit: { code: 'Indeks (2025=100)', display: 'number', decimals: 1 },
   },
+}
+
+/**
+ * Own-key lookup. Indicator ids come from callers, so inherited names such as
+ * `toString`, `constructor` or `__proto__` must be unknown, not "found".
+ */
+function specFor(indicatorId: string): SsbIndicatorSpec | undefined {
+  return Object.hasOwn(SSB_INDICATORS, indicatorId) ? SSB_INDICATORS[indicatorId] : undefined
 }
 
 /** The single region this adapter serves. Table 14701 is national only. */
@@ -169,9 +179,19 @@ export function parseSsbPayload(payload: unknown): SsbDataset {
     throw invalid('SSB-datasettet mangler dimension.')
   }
 
-  const dimensions: Record<string, SsbCategory> = {}
+  if (new Set(ids as string[]).size !== ids.length) {
+    throw invalid('SSB-datasettets id-liste har duplikate dimensjoner.')
+  }
+
+  // Null-prototype map: a dimension named `__proto__` or `constructor` can
+  // never alter the object or be mistaken for an inherited member.
+  const dimensions: Record<string, SsbCategory> = Object.create(null)
+  const rawDimensions = payload.dimension
   ids.forEach((dimId, i) => {
-    const cat = parseCategory(dimId as string, (payload.dimension as Record<string, unknown>)[dimId as string])
+    const rawDim = Object.hasOwn(rawDimensions, dimId as string)
+      ? rawDimensions[dimId as string]
+      : undefined
+    const cat = parseCategory(dimId as string, rawDim)
     if (cat.codes.length !== sizes[i]) {
       throw invalid(`SSB-dimensjonen «${dimId}» har ${cat.codes.length} kategorier, men size sier ${sizes[i]}.`)
     }
@@ -229,7 +249,7 @@ export function normalizeSsb(
   indicatorId: IndicatorId,
   fetchedAt: string,
 ): IndicatorSeries {
-  const spec = SSB_INDICATORS[indicatorId]
+  const spec = specFor(indicatorId)
   if (!spec) {
     throw new IndicatorError(
       'not_found',
@@ -237,8 +257,20 @@ export function normalizeSsb(
     )
   }
 
-  for (const dim of [DIM_GROUP, DIM_CONTENTS, DIM_TIME]) {
-    if (!(dim in dataset.dimensions)) {
+  // Exactly the expected dimension set, in any storage order. An extra
+  // dimension (even a one-category one) means SSB changed the table shape; we
+  // must not silently pick one of its categories and present a sub-series as
+  // the national total.
+  const unexpected = dataset.ids.filter((d) => !EXPECTED_DIMENSIONS.includes(d))
+  if (unexpected.length > 0) {
+    throw invalid(
+      `SSB-datasettet har uventede dimensjoner: ${unexpected.map((d) => `«${d}»`).join(', ')}. ` +
+        'Adapteren godtar bare nøyaktig ' +
+        `${EXPECTED_DIMENSIONS.map((d) => `«${d}»`).join(', ')}.`,
+    )
+  }
+  for (const dim of EXPECTED_DIMENSIONS) {
+    if (!Object.hasOwn(dataset.dimensions, dim)) {
       throw invalid(`SSB-datasettet mangler dimensjonen «${dim}».`)
     }
   }
@@ -349,7 +381,7 @@ export async function fetchSsbSeries(
   options?: GetIndicatorOptions,
   deps?: SsbDeps,
 ): Promise<IndicatorSeries> {
-  const spec = SSB_INDICATORS[indicatorId]
+  const spec = specFor(indicatorId)
   if (!spec) {
     throw new IndicatorError(
       'not_found',
@@ -400,7 +432,7 @@ export function createSsbSource(deps?: SsbDeps): IndicatorSource {
   return {
     id: SOURCE_ID,
     fetch(id, options) {
-      if (!(id in SSB_INDICATORS)) return Promise.resolve(null)
+      if (!specFor(id)) return Promise.resolve(null)
       return fetchSsbSeries(id, options, deps)
     },
   }

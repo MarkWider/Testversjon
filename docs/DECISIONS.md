@@ -220,3 +220,11 @@ bygget; `routeFor` er en enkel id-oppslag. Forslag til senere kontraktendring
 (`SourceMeta.updatedAt`) krever eget forslag og cross-review (DEC-004).
 Frontend er ikke endret; se `docs/sources/ssb-cpi-annual.md`.
 
+Presisering etter Codex-review av PR #17: SSB-adapteren godtar nøyaktig
+dimensjonssettet `VareTjenesteGrp`/`ContentsCode`/`Tid` (rekkefølgen er fri) og
+avviser alt annet som `invalid`, i stedet for å velge kategori 0 i en uventet
+dimensjon. Indikator-id slås opp med egne nøkler (`Object.hasOwn`) i SSB-adapteren,
+tjenestens routing og, som avgrenset og koordinert tillegg, World Bank-adapteren,
+slik at arvede navn som `toString` er ukjente id-er (`not_found`, ingen
+nettverkskall). Ingen bredere refaktorering.
+

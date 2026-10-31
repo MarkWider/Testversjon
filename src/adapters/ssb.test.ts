@@ -382,3 +382,157 @@ describe('createSsbSource', () => {
     expect(series?.indicator).toBe(ID)
   })
 })
+
+// --- Regression: Codex review of PR #17 (blocker + inherited names) ----------
+
+const INHERITED_IDS = [
+  'toString',
+  'constructor',
+  '__proto__',
+  'hasOwnProperty',
+  'valueOf',
+  'isPrototypeOf',
+  '__defineGetter__',
+]
+
+/**
+ * Real fixture + one EXTRA dimension (synthetic, not SSB data) inserted at
+ * `position` of the storage order. Category 0 / 1 values are chosen by
+ * `valueFor`, so a test can make the silently-chosen category 0 the "wrong" one
+ * (999) exactly as the Codex reproduction did.
+ */
+function withExtraDimension(
+  position: number,
+  categories: string[],
+  valueFor: (cat: number, real: number | null) => number | null,
+): Json {
+  const body = fixtureCopy()
+  const realValues = body.value as Array<number | null>
+  const ids = [...(body.id as string[])]
+  const sizes = [...(body.size as number[])]
+  ids.splice(position, 0, 'Kjonn')
+  sizes.splice(position, 0, categories.length)
+  const timeLen = realValues.length
+  const strides = new Array<number>(ids.length).fill(1)
+  for (let i = ids.length - 2; i >= 0; i -= 1) strides[i] = strides[i + 1] * sizes[i + 1]
+  const value = new Array<number | null>(categories.length * timeLen).fill(null)
+  for (let cat = 0; cat < categories.length; cat += 1) {
+    for (let t = 0; t < timeLen; t += 1) {
+      const idx = cat * strides[ids.indexOf('Kjonn')] + t * strides[ids.indexOf('Tid')]
+      value[idx] = valueFor(cat, realValues[t])
+    }
+  }
+  const dimension = body.dimension as Json
+  dimension.Kjonn = {
+    label: 'kjønn',
+    category: {
+      index: Object.fromEntries(categories.map((c, i) => [c, i])),
+      label: Object.fromEntries(categories.map((c) => [c, c])),
+    },
+  }
+  return { ...body, id: ids, size: sizes, value }
+}
+
+describe('normalizeSsb rejects unexpected dimensions (no silent category 0)', () => {
+  const reject = (body: Json) => {
+    const call = () => normalizeSsb(parseSsbPayload(body), ID, FETCHED_AT)
+    expect(call).toThrow(IndicatorError)
+    try {
+      call()
+    } catch (err) {
+      expect((err as IndicatorError).code).toBe('invalid')
+      expect((err as IndicatorError).message).toMatch(/Kjonn/)
+    }
+  }
+
+  it('Codex reproduction: a two-category extra dimension must not yield a series (was 999 for 2000)', () => {
+    // cat 0 = 999 => previously accepted as national KPI with unit "Indeks (2025=100)".
+    const body = withExtraDimension(3, ['Menn', 'Kvinner'], (cat, real) => (cat === 0 ? 999 : real))
+    reject(body)
+  })
+
+  it('rejects the extra dimension wherever it sits in the storage order', () => {
+    for (const position of [0, 1, 2, 3]) {
+      reject(withExtraDimension(position, ['Menn', 'Kvinner'], (cat, real) => (cat === 0 ? 999 : real)))
+      // Even when category 0 happens to carry the right numbers.
+      reject(withExtraDimension(position, ['Menn', 'Kvinner'], (cat, real) => (cat === 0 ? real : 999)))
+    }
+  })
+
+  it('rejects an extra dimension with only one category too (exact dimension set)', () => {
+    reject(withExtraDimension(3, ['Alle'], (_cat, real) => real))
+  })
+
+  it('rejects through fetchSsbSeries and never returns a series', async () => {
+    const body = withExtraDimension(3, ['Menn', 'Kvinner'], (cat, real) => (cat === 0 ? 999 : real))
+    await expect(
+      fetchSsbSeries(ID, undefined, { fetchJson: () => Promise.resolve(body) }),
+    ).rejects.toMatchObject({ code: 'invalid' })
+  })
+
+  it('rejects a duplicated dimension id', () => {
+    const body = fixtureCopy()
+    body.id = ['VareTjenesteGrp', 'ContentsCode', 'ContentsCode']
+    body.size = [1, 1, 1]
+    body.value = [1]
+    expect(() => parseSsbPayload(body)).toThrow(IndicatorError)
+  })
+
+  it('still accepts every reordered storage order of the expected dimensions', () => {
+    const orders = [
+      ['VareTjenesteGrp', 'ContentsCode', 'Tid'],
+      ['VareTjenesteGrp', 'Tid', 'ContentsCode'],
+      ['ContentsCode', 'VareTjenesteGrp', 'Tid'],
+      ['ContentsCode', 'Tid', 'VareTjenesteGrp'],
+      ['Tid', 'VareTjenesteGrp', 'ContentsCode'],
+      ['Tid', 'ContentsCode', 'VareTjenesteGrp'],
+    ] as Array<Array<'VareTjenesteGrp' | 'ContentsCode' | 'Tid'>>
+    for (const order of orders) {
+      const s = normalizeSsb(parseSsbPayload(synthetic(order)), ID, FETCHED_AT)
+      expect(s.points.map((p) => p.value)).toEqual([0, 1, 2])
+    }
+  })
+
+  it('does not let a dimension named like an inherited property pollute the dataset', () => {
+    const body = fixtureCopy()
+    body.id = ['VareTjenesteGrp', 'ContentsCode', 'Tid', '__proto__']
+    body.size = [1, 1, 26, 1]
+    ;(body.dimension as Json)['__proto__'] = {
+      category: { index: { x: 0 }, label: { x: 'x' } },
+    }
+    const call = () => normalizeSsb(parseSsbPayload(body), ID, FETCHED_AT)
+    expect(call).toThrow(IndicatorError)
+  })
+})
+
+describe('inherited property names are unknown indicator ids (not_found, no request)', () => {
+  it.each(INHERITED_IDS)('normalizeSsb("%s") -> not_found', (id) => {
+    expect(() => normalizeSsb(parseSsbPayload(fixture), id, FETCHED_AT)).toThrowError(
+      expect.objectContaining({ code: 'not_found' }),
+    )
+  })
+
+  it.each(INHERITED_IDS)('fetchSsbSeries("%s") -> not_found without fetching', async (id) => {
+    const fetchJson = vi.fn((_url: string) => Promise.resolve(fixture))
+    await expect(fetchSsbSeries(id, undefined, { fetchJson })).rejects.toMatchObject({ code: 'not_found' })
+    expect(fetchJson).not.toHaveBeenCalled()
+  })
+
+  it.each(INHERITED_IDS)('createSsbSource().fetch("%s") -> null without fetching', async (id) => {
+    const fetchJson = vi.fn((_url: string) => Promise.resolve(fixture))
+    expect(await createSsbSource({ fetchJson }).fetch(id)).toBeNull()
+    expect(fetchJson).not.toHaveBeenCalled()
+  })
+
+  it('never builds a URL containing "undefined" for any inherited name', async () => {
+    const urls: string[] = []
+    const source = createSsbSource({
+      fetchJson: (url) => {
+        urls.push(url)
+        return Promise.resolve(fixture)
+      },
+    })
+    for (const id of INHERITED_IDS) await source.fetch(id)
+    expect(urls).toEqual([])
+  })
+})

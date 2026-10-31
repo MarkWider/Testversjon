@@ -87,10 +87,11 @@ interface Route {
 /**
  * Indicators owned by an explicit non-World-Bank source are listed here; every
  * other id keeps the original World Bank route (and its `not_found` behaviour),
- * so `gdp_per_capita` is unchanged.
+ * so `gdp_per_capita` is unchanged. Own-key check on purpose: inherited names
+ * such as `toString` are unknown ids, never SSB indicators.
  */
 function routeFor(id: IndicatorId): Route {
-  if (id in SSB_INDICATORS) return { source: ssbSource }
+  if (Object.hasOwn(SSB_INDICATORS, id)) return { source: ssbSource }
   return { source: worldBankSource, defaultWindow: PILOT_PERIOD }
 }
 

@@ -67,7 +67,9 @@ Verdensbanken. Dette er en teknisk pilot, ikke en bekreftet offentlig lansering.
 - Issue #15 (Claude Code): første SSB-adapter, `cpi_annual_total` (årlig KPI,
   totalindeks, Norge, SSB-tabell 14701, 2000–2025) levert i PR fra
   `claude/ssb-cpi-annual`, avventer uavhengig review av Codex. Ikke koblet til
-  frontend. Se DEC-010 og `docs/sources/ssb-cpi-annual.md`. Dette er første
+  frontend. Se DEC-010 og `docs/sources/ssb-cpi-annual.md`. Codex ba om rettelser
+  (uventede dimensjoner, arvede id-navn); rettet i samme PR, nytt avgrenset
+  Codex-review kreves. Dette er første
   gjennomkjøring av issue → implementasjon → review i skyen, ikke fullført før
   reviewet er publisert.
 
@@ -106,6 +108,9 @@ Verdensbanken. Dette er en teknisk pilot, ikke en bekreftet offentlig lansering.
   Bank (kildens `lastupdated`). SSBs `updated` er ikke i kontrakten.
 - SSB-indikatoren returnerer hele serien som standard (ingen pilotvindu). SSB
   bruker 2025=100 (COICOP 2018); endres basisår, feiler adapteren med `invalid`.
+- `src/data/sampleSource.ts` slår opp id med `SERIES_BY_ID[id]` (arvede navn som
+  `toString` er ikke avvist). Kilden er ikke koblet inn i tjenesten, så ingen
+  effekt i dag; ikke endret her (utenfor avtalt scope).
 - `pnpm test:live` (nettverk mot SSB) er ikke del av `pnpm test`. I
   Claude Code-skyen kreves `NODE_USE_ENV_PROXY=1` for at Node `fetch` skal bruke
   miljøets proxy.

@@ -32,8 +32,11 @@ GET https://data.ssb.no/api/pxwebapi/v2/tables/14701/data
 ```
 
 Responsen er JSON-stat2 med `id = [VareTjenesteGrp, ContentsCode, Tid]` og
-`size = [1, 1, 26]`. Adapteren finner celler via dimensjons-id og stride, ikke
-via antatt posisjon. Perioden `from`/`to` brukes **etter** henting, så forespørselen
+`size = [1, 1, 26]`. Adapteren godtar **nøyaktig** dimensjonssettet
+`VareTjenesteGrp`, `ContentsCode` og `Tid`, i vilkårlig lagringsrekkefølge, og
+finner celler via dimensjons-id og stride, ikke via antatt posisjon. En ekstra
+dimensjon (også med én kategori) gir `invalid`: adapteren velger aldri stilltiende
+en kategori i en dimensjon den ikke har bedt om. Perioden `from`/`to` brukes **etter** henting, så forespørselen
 er lik uansett vindu.
 
 ## Måleenhet, basisår og tidsdefinisjon
@@ -87,6 +90,10 @@ Siste fullførte år er **2025**. Årsverdien for 2026 finnes ikke før året er
 
 ## Tester
 
+- Regresjonstester etter Codex-review (PR #17): ekstra flerverdig dimensjon på alle
+  posisjoner (tidligere ble 999 vist som nasjonal KPI), og arvede navn
+  (`toString`, `constructor`, `__proto__` m.fl.) som indikator-id gir `not_found`
+  uten nettverkskall.
 - `pnpm test`: deterministiske tester mot fixturen
   `src/adapters/__fixtures__/ssb.cpiAnnualTotal.json` (SSBs uendrede respons, 5,4 kB),
   pluss syntetiske varianter som er merket som syntetiske i testene.

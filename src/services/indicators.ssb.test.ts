@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { validateIndicatorSeries } from '../contracts/validate'
 import { IndicatorError, getIndicatorData } from './indicators'
+import { ssbSource } from '../adapters/ssb'
+import { worldBankSource } from '../adapters/worldBank'
 import ssbFixture from '../adapters/__fixtures__/ssb.cpiAnnualTotal.json'
 import wbFixture from '../adapters/__fixtures__/worldBank.gdpPerCapita.json'
 
@@ -124,5 +126,54 @@ describe('World Bank route is unchanged by the SSB route', () => {
   it('an unknown indicator is still not_found and never reaches SSB', async () => {
     await expect(getIndicatorData('nope')).rejects.toMatchObject({ code: 'not_found' })
     expect(calls.some((u) => u.includes('data.ssb.no'))).toBe(false)
+  })
+})
+
+describe('getIndicatorData: inherited property names are unknown ids', () => {
+  const ids = ['toString', 'constructor', '__proto__', 'hasOwnProperty', 'valueOf', '__defineGetter__']
+
+  it.each(ids)('"%s" -> not_found with no network call at all', async (id) => {
+    for (const options of [undefined, { periodMode: 'all' as const }, { from: '2010' }]) {
+      await expect(getIndicatorData(id, options)).rejects.toMatchObject({ code: 'not_found' })
+    }
+    expect(calls).toEqual([])
+  })
+
+  it.each(ids)('routing alone: "%s" is never handed to the SSB source', async (id) => {
+    // The adapters also reject inherited names; this isolates the service's own
+    // routing check (defence in depth must not hide a routing regression).
+    const ssbSpy = vi.spyOn(ssbSource, 'fetch')
+    const wbSpy = vi.spyOn(worldBankSource, 'fetch')
+    try {
+      await expect(getIndicatorData(id)).rejects.toMatchObject({ code: 'not_found' })
+      expect(ssbSpy).not.toHaveBeenCalled()
+      expect(wbSpy).toHaveBeenCalledTimes(1)
+    } finally {
+      ssbSpy.mockRestore()
+      wbSpy.mockRestore()
+    }
+  })
+
+  it('a valid id still works after the unknown-id calls (no shared state)', async () => {
+    await expect(getIndicatorData('toString')).rejects.toMatchObject({ code: 'not_found' })
+    const series = await getIndicatorData(ID)
+    expect(series.source.id).toBe('ssb')
+  })
+})
+
+describe('getIndicatorData: a response with an unexpected extra dimension is invalid', () => {
+  it('rejects instead of presenting a sub-series as national KPI (Codex reproduction)', async () => {
+    const body = JSON.parse(JSON.stringify(ssbFixture)) as Record<string, unknown>
+    const real = body.value as number[]
+    // Extra dimension stored LAST with two categories; category 0 carries 999.
+    body.id = [...(body.id as string[]), 'Kjonn']
+    body.size = [1, 1, 26, 2]
+    ;(body.dimension as Record<string, unknown>).Kjonn = {
+      label: 'kjønn',
+      category: { index: { Menn: 0, Kvinner: 1 }, label: { Menn: 'Menn', Kvinner: 'Kvinner' } },
+    }
+    body.value = real.flatMap((v) => [999, v])
+    ssbReply = () => Promise.resolve(response(body))
+    await expect(getIndicatorData(ID)).rejects.toMatchObject({ code: 'invalid' })
   })
 })
