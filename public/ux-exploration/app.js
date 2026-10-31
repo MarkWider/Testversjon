@@ -1,7 +1,7 @@
 const buttons = document.querySelectorAll('[data-layout]')
 
 function selectLayout(layout) {
-  const selected = ['b', 'c'].includes(layout) ? layout : 'a'
+  const selected = ['a', 'b', 'c'].includes(layout) ? layout : 'c'
   document.body.dataset.layout = selected
   const page = document.querySelector('.page')
   page.hidden = selected === 'c'
