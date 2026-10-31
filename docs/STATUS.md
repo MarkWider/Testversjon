@@ -64,6 +64,12 @@ Verdensbanken. Dette er en teknisk pilot, ikke en bekreftet offentlig lansering.
   skymiljø. Dette er eierbekreftede tester, ikke en ny teknisk verifikasjon her.
 - Hele arbeidsflyten fra issue via implementasjon til uavhengig review er ennå
   ikke bekreftet gjennomført i skyen. Automatisk delegering er ikke etablert.
+- Issue #15 (Claude Code): første SSB-adapter, `cpi_annual_total` (årlig KPI,
+  totalindeks, Norge, SSB-tabell 14701, 2000–2025) levert i PR fra
+  `claude/ssb-cpi-annual`, avventer uavhengig review av Codex. Ikke koblet til
+  frontend. Se DEC-010 og `docs/sources/ssb-cpi-annual.md`. Dette er første
+  gjennomkjøring av issue → implementasjon → review i skyen, ikke fullført før
+  reviewet er publisert.
 
 ## Next
 
@@ -76,9 +82,12 @@ Verdensbanken. Dette er en teknisk pilot, ikke en bekreftet offentlig lansering.
   uavhengig review fra den andre agenten. Chief of Staff følger opp i GitHub.
 - Vent på uavhengig review før fremtidige PR-er merges. Automatisk oppstart er
   ikke etablert; senere automatisering vurderes først ved reelt behov.
-- Velg neste produktoppgave med Human Owner. SSB er en mulig neste datakilde;
-  Eurostat, OECD, resolver og fler-kilde-`source` er senere forslag, ikke
-  igangsatte oppgaver eller vedtatte kontraktendringer.
+- Frontend for `cpi_annual_total` følger i separat issue (Codex). `IndicatorContent`
+  har fortsatt BNP-spesifikk tekst (f.eks. tabell-caption «BNP per innbygger»).
+- Velg neste produktoppgave med Human Owner. Eurostat, OECD, resolver og
+  fler-kilde-`source` er senere forslag, ikke igangsatte oppgaver eller
+  vedtatte kontraktendringer. `SourceMeta.updatedAt` (SSBs `updated`) er et
+  mulig kontraktforslag, ikke vedtatt (DEC-004).
 - Koordinert opprydding: `src/data/gdpPerCapita.ts` + `gdpPerCapita.test.ts`
   fjernes av datalag-eier (ikke lenger importert av produksjonskode).
 
@@ -93,6 +102,13 @@ Verdensbanken. Dette er en teknisk pilot, ikke en bekreftet offentlig lansering.
   `createWorldBankSource({ fetchJson })`.
 - `source.fetchedAt` fra World Bank er kildens `lastupdated` (dato, ikke
   klokkeslett) — bevisst valg for determinisme.
+- `source.fetchedAt` fra SSB er faktisk hentetid (ISO 8601), i motsetning til World
+  Bank (kildens `lastupdated`). SSBs `updated` er ikke i kontrakten.
+- SSB-indikatoren returnerer hele serien som standard (ingen pilotvindu). SSB
+  bruker 2025=100 (COICOP 2018); endres basisår, feiler adapteren med `invalid`.
+- `pnpm test:live` (nettverk mot SSB) er ikke del av `pnpm test`. I
+  Claude Code-skyen kreves `NODE_USE_ENV_PROXY=1` for at Node `fetch` skal bruke
+  miljøets proxy.
 - Lokal runtime er Node 24.19.0 LTS + pnpm 11.19.0 (via Corepack).
 
 ## Recommended model for next task

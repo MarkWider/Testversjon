@@ -190,3 +190,33 @@ automatisk trigger eller teknisk tildeling til en GitHub-konto. Direkte
 delegering, automatisk varsling og bakgrunnsoppfølging er ikke etablert.
 Den samlede issue–implementasjon–review-flyten må fortsatt testes.
 Rollefordelingen og kravet om reviewet PR til main gjelder fortsatt.
+
+## DEC-010
+
+Decision:
+Første SSB-kilde er `cpi_annual_total`: SSBs offisielle **årsgjennomsnitt** av
+konsumprisindeksen, totalindeks (`VareTjenesteGrp 00`), Norge, fra **tabell 14701**
+(2025=100), som indeksnivå. `getIndicatorData` ruter etter indikator-id: ids i
+`SSB_INDICATORS` går til `ssbSource`, alle andre til World Bank som før.
+Pilotvinduet 2015-2023 gjelder bare World Bank-ruten; SSB-indikatoren returnerer
+hele serien (2000-2025) som standard. Eksplisitte `from`/`to` vinner alltid.
+
+Reason:
+Issue #15. Tabell 14700 (nevnt i issuen) er månedlig; 14701 er SSBs egen årsserie,
+så ingen egen beregning av månedsmiddel trengs. Uten routing ville KPI arvet
+BNP-vinduet utilsiktet.
+
+Alternatives:
+Beregne årsmiddel fra 14700 (avvist: egen metode); bruke desemberindeks (avvist:
+ikke årsgjennomsnitt); legge SSB-standardvindu i adapteren; endre kontrakten med
+`updatedAt` og kildevalg (utsatt, se under).
+
+Consequences:
+`IndicatorSeries` og `IndicatorSource` er uendret. `source.fetchedAt` er faktisk
+hentetid for SSB (World Bank bruker kildens `lastupdated`, DEC-007); SSBs
+`updated` ligger kun på adapterens parse-resultat. Adapteren feiler med `invalid`
+hvis SSB endrer basisår eller målingstype. Fler-kilde-resolver er fortsatt ikke
+bygget; `routeFor` er en enkel id-oppslag. Forslag til senere kontraktendring
+(`SourceMeta.updatedAt`) krever eget forslag og cross-review (DEC-004).
+Frontend er ikke endret; se `docs/sources/ssb-cpi-annual.md`.
+

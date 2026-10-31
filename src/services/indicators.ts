@@ -3,13 +3,15 @@
 // The frontend imports ONLY from this module and from ../contracts/indicator.
 // It must never need to import ../data/* or ../adapters/* directly.
 //
-// Active source for `gdp_per_capita`: the World Bank adapter (docs/DECISIONS.md
-// DEC-007). `sampleSource` is kept in the codebase for reversibility but is no
-// longer wired in here.
+// Active sources: `gdp_per_capita` is served by the World Bank adapter
+// (docs/DECISIONS.md DEC-007); `cpi_annual_total` by the SSB adapter (DEC-010).
+// `sampleSource` is kept in the codebase for reversibility but is no longer
+// wired in here.
 //
 // `periodMode` (DEC-008) lets a caller pick the period window without knowing
 // any source's start/end years. It is a service concern and is stripped before
-// the source is called.
+// the source is called. The pilot default window belongs to the World Bank
+// route only (DEC-010): SSB indicators return their full series by default.
 
 import type {
   GetIndicatorOptions,
@@ -18,6 +20,8 @@ import type {
 } from '../contracts/indicator'
 import { validateIndicatorSeries } from '../contracts/validate'
 import { worldBankSource } from '../adapters/worldBank'
+import { SSB_INDICATORS, ssbSource } from '../adapters/ssb'
+import type { IndicatorSource } from '../data/source'
 
 export type {
   GetIndicatorOptions,
@@ -73,6 +77,23 @@ export interface GetIndicatorDataOptions extends GetIndicatorOptions {
  */
 const PILOT_PERIOD = { from: '2015', to: '2023' } as const
 
+/** Which source serves an indicator, and which default window (if any) it gets. */
+interface Route {
+  source: IndicatorSource
+  /** Applied for `periodMode: 'default'` per missing bound. None = full series. */
+  defaultWindow?: { readonly from: string; readonly to: string }
+}
+
+/**
+ * Indicators owned by an explicit non-World-Bank source are listed here; every
+ * other id keeps the original World Bank route (and its `not_found` behaviour),
+ * so `gdp_per_capita` is unchanged.
+ */
+function routeFor(id: IndicatorId): Route {
+  if (id in SSB_INDICATORS) return { source: ssbSource }
+  return { source: worldBankSource, defaultWindow: PILOT_PERIOD }
+}
+
 /**
  * Fetch one indicator as a normalized {@link IndicatorSeries}.
  *
@@ -91,19 +112,21 @@ export async function getIndicatorData(
 ): Promise<IndicatorSeries> {
   const { periodMode = 'default', ...contractOptions } = options ?? {}
 
+  const { source, defaultWindow } = routeFor(id)
+
   // `periodMode` is a service concern and is never forwarded to the source.
   const sourceOptions: GetIndicatorOptions =
-    periodMode === 'all'
+    periodMode === 'all' || !defaultWindow
       ? { ...contractOptions }
       : {
           ...contractOptions,
-          from: contractOptions.from ?? PILOT_PERIOD.from,
-          to: contractOptions.to ?? PILOT_PERIOD.to,
+          from: contractOptions.from ?? defaultWindow.from,
+          to: contractOptions.to ?? defaultWindow.to,
         }
 
   let raw: IndicatorSeries | null
   try {
-    raw = await worldBankSource.fetch(id, sourceOptions)
+    raw = await source.fetch(id, sourceOptions)
   } catch (err) {
     // A typed IndicatorError from the source already carries the right code —
     // pass it through unchanged. Only genuinely unexpected failures become
@@ -111,7 +134,7 @@ export async function getIndicatorData(
     if (err instanceof IndicatorError) throw err
     throw new IndicatorError(
       'source_unavailable',
-      `Kilden «${worldBankSource.id}» kunne ikke levere «${id}».`,
+      `Kilden «${source.id}» kunne ikke levere «${id}».`,
     )
   }
 
