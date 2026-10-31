@@ -150,4 +150,28 @@ describe('IndicatorContent', () => {
     expect(markup).toContain('id="chart-data-description"')
     expect(markup.indexOf('id="chart-data-description"')).toBeLessThan(markup.indexOf('<details class="data-details"'))
   })
+
+  it('renders SSB CPI metadata and period controls without GDP or country comparisons', () => {
+    const cpi: IndicatorSeries = {
+      indicator: 'cpi_annual_total',
+      title: 'Konsumprisindeks (KPI), totalindeks',
+      subtitle: 'Årsgjennomsnitt, indeksnivå',
+      unit: { code: 'Indeks (2025=100)', display: 'number', decimals: 1 },
+      source: { id: 'ssb', label: 'Statistisk sentralbyrå, tabell 14701', official: true, fetchedAt: '2026-10-31T12:00:00Z' },
+      regions: [{ code: 'NO', name: 'Norge' }],
+      points: [{ region: 'NO', period: '2024', value: 97.1 }, { region: 'NO', period: '2025', value: 100 }],
+    }
+    const markup = renderToStaticMarkup(<IndicatorContent onRetry={() => undefined} state={{ status: 'success', series: cpi }} />)
+    expect(markup).toContain('Statistisk sentralbyrå, tabell 14701')
+    expect(markup).toContain('Indeks (2025=100)')
+    expect(markup).toContain('Årsgjennomsnitt')
+    expect(markup).toContain('Hele perioden')
+    expect(markup).toContain('2025')
+    expect(markup).toContain('hentet 2026-10-31')
+    expect(markup).not.toContain('BNP per innbygger')
+    expect(markup).not.toContain('Sammenlign med')
+    expect(markup).not.toContain('Sverige')
+    expect(markup).not.toContain('Danmark')
+    expect(markup).not.toContain('kjøpekraft')
+  })
 })
