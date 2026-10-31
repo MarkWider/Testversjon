@@ -143,6 +143,13 @@ slik at Human Owner kan videreformidle det. Dette er en midlertidig reserveflyt,
 og er ikke bevis på at GitHub-overleveringen fungerer. Rettigheter må undersøkes
 i det aktuelle agentmiljøet; tilgang i ChatGPT Work gjelder ikke automatisk der.
 
+Signer oppgavebeskrivelser, PR-beskrivelser og rapporter med utførende rolle:
+`Avsender: Chief of Staff (ChatGPT Work)`, `Avsender: Codex` eller
+`Avsender: Claude Code`. Ved videreformidling oppgis både opprinnelig avsender
+og hvem som videreformidler. Signaturen er selvrapportert; når flere miljøer
+bruker Human Owners GitHub-konto, beviser ikke kontonavnet hvilken agent eller
+person som utførte handlingen.
+
 Sluttrapporten i GitHub skal oppgi hva som er endret, PR og commit-SHA, hvilke
 kontroller som faktisk er kjørt med resultat, og kjente problemer eller
 beslutninger som gjenstår. Hvis miljøet mangler skrivetilgang eller nødvendige
