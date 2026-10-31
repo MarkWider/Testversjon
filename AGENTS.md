@@ -18,6 +18,12 @@ er en sekundærrolle.
 
 - GitHub er prosjektets felles minne. Ikke anta delt agentkontekst.
 - Les styringsfiler og åpne PR-er før arbeid starter.
+- Oppgaver adresseres i GitHub Issues med `[Codex]` eller `[Claude Code]` i
+  tittelen og én utførende agent i `Recommended agent`. Les hele issuen og
+  kommentarene. Human Owner starter agentene manuelt i sine eksisterende miljøer;
+  en GitHub-oppgave starter dem ikke automatisk.
+- Rapporter oppstart, blockers og resultat i GitHub; lenk PR og oppgi kontrollert
+  commit-SHA. Se `docs/WORKING_MODEL.md` for oppgave- og overleveringsformat.
 - Arbeid på egen branch: `codex/<task>` for Codex, `claude/<task>` for Claude
   Code og `work/<task>` for ChatGPT Work.
 - `main` er siste godkjente versjon og endres kun via reviewet pull request.

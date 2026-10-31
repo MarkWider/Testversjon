@@ -165,3 +165,28 @@ tjenestespesifikt og nar aldri `IndicatorSource`/adapteren. Liten og reversibel:
 utvidelsen er én ny type og én gren i `getIndicatorData`. Frontend-periodevalgene
 "10 ar"/"25 ar" bruker eksplisitte grenser; "Hele perioden" bruker
 `periodMode: 'all'`.
+
+## DEC-009
+
+Decision:
+Bruk Human Owners eksisterende Codex Cloud og Claude Code, med ChatGPT Work
+som Chief of Staff og GitHub Issues som felles oppgavebok. Oppgaver adresseres
+til én agent med `[Codex]` eller `[Claude Code]` i tittelen og
+`Recommended agent` i beskrivelsen. Human Owner starter agentene med en kort
+henvisning til issue-nummeret. Resultater og review dokumenteres i GitHub.
+
+Reason:
+Reduserer kopiering mellom chatter, beholder eksisterende agentmiljøer og gir
+sporbare oppgaver uten å bygge egen automatisering eller kreve en separat
+Copilot-agentintegrasjon.
+
+Alternatives:
+Manuell kopiering av hele oppgaver/resultater; separate GitHub-integrerte
+agenter; egen automatisering som starter agentene.
+
+Consequences:
+Manuell oppstart er fortsatt nødvendig. Tekstlig adressering er ikke en
+automatisk trigger eller teknisk tildeling til en GitHub-konto. Direkte
+delegering, automatisk varsling og bakgrunnsoppfølging er ikke etablert.
+Den samlede issue–implementasjon–review-flyten må fortsatt testes.
+Rollefordelingen og kravet om reviewet PR til main gjelder fortsatt.
