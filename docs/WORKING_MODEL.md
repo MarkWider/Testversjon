@@ -133,6 +133,23 @@ Eksempler (bytt ut plassholderen):
   Claude Code, inkludert kommentarer. Utfør oppgaven og rapporter resultatet
   i GitHub.»
 
+En ren review-oppgave rapporteres i den aktuelle PR-en med konklusjon, funn og
+kontrollert commit-SHA; en eventuell tilhørende issue får en lenke til reviewet.
+Review uten filendringer trenger ingen egen branch eller PR. En kommentar
+erstatter ikke en formell godkjenning dersom branch-reglene krever det.
+
+Ved manglende skrivetilgang rapporterer agenten feilen og reviewet i sin chat,
+slik at Human Owner kan videreformidle det. Dette er en midlertidig reserveflyt,
+og er ikke bevis på at GitHub-overleveringen fungerer. Rettigheter må undersøkes
+i det aktuelle agentmiljøet; tilgang i ChatGPT Work gjelder ikke automatisk der.
+
+Signer oppgavebeskrivelser, PR-beskrivelser og rapporter med utførende rolle:
+`Avsender: Chief of Staff (ChatGPT Work)`, `Avsender: Codex` eller
+`Avsender: Claude Code`. Ved videreformidling oppgis både opprinnelig avsender
+og hvem som videreformidler. Signaturen er selvrapportert; når flere miljøer
+bruker Human Owners GitHub-konto, beviser ikke kontonavnet hvilken agent eller
+person som utførte handlingen.
+
 Sluttrapporten i GitHub skal oppgi hva som er endret, PR og commit-SHA, hvilke
 kontroller som faktisk er kjørt med resultat, og kjente problemer eller
 beslutninger som gjenstår. Hvis miljøet mangler skrivetilgang eller nødvendige
@@ -164,7 +181,7 @@ Ready Next Task.
 
 ## Teknologiske prinsipper
 
-- Ei produktet, kjøp standard infrastruktur.
+- Eie produktet, kjøpe standard infrastruktur.
 - Behold eierskap til kode, datamodell, produktlogikk, visualiseringslogikk,
   beslutninger og dokumentasjon.
 - Hold modeller og leverandører mest mulig utskiftbare.

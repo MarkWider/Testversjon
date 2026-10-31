@@ -37,12 +37,28 @@ Verdensbanken. Dette er en teknisk pilot, ikke en bekreftet offentlig lansering.
 - Første UX-sprint merget (#11): interaktiv graf med periode- og landvalg,
   datadrevne funn og tilgjengelig tabell. Siste verifisering i PR-en: 79 tester
   og produksjonsbygg bestått.
+- Samarbeidsmodellen (DEC-009) er merget i PR #13, merge-commit
+  `48210d1953a0e1406e1015e041cce38fc717bbab`.
 
 ## In progress
 
-- Samarbeidsmodell dokumentert i denne endringsgrenen (DEC-009): eksisterende
-  agentmiljøer, GitHub Issues og manuell oppstart. Dokumentasjonsendringen
-  avventer review og merge.
+- Human Owner har videreformidlet at Codex bekrefter arbeidsmodellen, og en
+  Claude Code-review av `c8edeff3a33feaf8f8b44b0ff2de8e18bf2a1432` uten
+  blockers, med oppfølgingspunkter. Reviewet kom etter merge og ble ikke
+  publisert i GitHub. Dette oppfyller ikke kravet om review før merge; årsaken
+  til den tidlige mergen er ikke avklart. Ifølge egen øktlogg opprettet
+  Chief of Staff PR-en uten å utføre merge. GitHub viser kontoen MarkWider;
+  kontonavnet alene skiller ikke mellom eier og agentmiljøer.
+- Tidligere Claude Code-forsøk på kommentar og review ble avvist med HTTP 403.
+  Etter installasjon av Claude-appen publiserte Claude Code en testkommentar
+  og et review som kommentar på PR #14. Chief of Staff har lest begge i GitHub:
+  [skrivetest](https://github.com/MarkWider/Testversjon/pull/14#issuecomment-6543518393)
+  og [review](https://github.com/MarkWider/Testversjon/pull/14#issuecomment-6543521979).
+  Reviewet godkjenner commit `1aad7eb00c366f4fb1660defcc40d989894e5e73`
+  uten blockers. Denne statusoppdateringen følger opp de to lave funnene.
+  Kommentarer er dermed verifisert; formell review og issue-oppretting fra
+  Claude Code er ikke testet. Tilgang til å pushe kode er heller ikke bekreftet
+  av kommentartesten.
 - Human Owner bekrefter 31. oktober 2026 at Codex Cloud er testet fra en annen
   enhet mens PC-en var avslått, og at Claude Code har lest prosjektfilene fra et
   skymiljø. Dette er eierbekreftede tester, ikke en ny teknisk verifikasjon her.
@@ -51,12 +67,15 @@ Verdensbanken. Dette er en teknisk pilot, ikke en bekreftet offentlig lansering.
 
 ## Next
 
-- La Codex og Claude Code lese den nye arbeidsmodellen; før merge må de lese
-  dokumentasjonsgrenen/PR-en eksplisitt.
+- Kontroller den siste statusendringen i PR #14 før merge; det eksisterende
+  reviewet gjelder commit `1aad7eb`. Formell GitHub-godkjenning er ikke testet,
+  og eventuell påkrevd godkjenning må følge repositoryets regler.
+- Verifiser Chief of Staffs issue-oppretting og Codex sin rapportering i GitHub;
+  dette er ennå ikke bekreftet gjennom en test-issue.
 - Test en liten issue adressert til én agent, manuell oppstart, lenket PR og
   uavhengig review fra den andre agenten. Chief of Staff følger opp i GitHub.
-- Oppgaveoppretting og automatisk oppstart inngår ikke i denne
-  dokumentasjonsendringen. Senere automatisering vurderes først ved reelt behov.
+- Vent på uavhengig review før fremtidige PR-er merges. Automatisk oppstart er
+  ikke etablert; senere automatisering vurderes først ved reelt behov.
 - Velg neste produktoppgave med Human Owner. SSB er en mulig neste datakilde;
   Eurostat, OECD, resolver og fler-kilde-`source` er senere forslag, ikke
   igangsatte oppgaver eller vedtatte kontraktendringer.

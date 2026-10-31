@@ -38,4 +38,4 @@ AGENTS.md          Agentkontrakt og Git-regler
 
 ## Samarbeid
 
-`main` er siste godkjente versjon. Implementasjon skjer på `codex/<task>`, og reviewarbeid på `claude/<task>`. Se [AGENTS.md](AGENTS.md) for full arbeidsflyt.
+`main` er siste godkjente versjon. Codex implementerer på `codex/<task>`, Claude Code på `claude/<task>`, og ChatGPT Work på `work/<task>`. Rene reviews uten filendringer rapporteres i PR-en og trenger ingen egen branch. Se [AGENTS.md](AGENTS.md) og [arbeidsmodellen](docs/WORKING_MODEL.md) for oppgaver og overlevering.
