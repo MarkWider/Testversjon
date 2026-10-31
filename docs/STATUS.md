@@ -40,16 +40,23 @@ Verdensbanken. Dette er en teknisk pilot, ikke en bekreftet offentlig lansering.
 
 ## In progress
 
-- Ingen aktiv utviklings-PR identifisert ved statusgjennomgang 31. oktober 2026.
-- Skybasert arbeidsflyt er ikke bekreftet konfigurert eller testet for prosjektet.
+- Samarbeidsmodell dokumentert i denne endringsgrenen (DEC-009): eksisterende
+  agentmiljøer, GitHub Issues og manuell oppstart. Dokumentasjonsendringen
+  avventer review og merge.
+- Human Owner bekrefter 31. oktober 2026 at Codex Cloud er testet fra en annen
+  enhet mens PC-en var avslått, og at Claude Code har lest prosjektfilene fra et
+  skymiljø. Dette er eierbekreftede tester, ikke en ny teknisk verifikasjon her.
+- Hele arbeidsflyten fra issue via implementasjon til uavhengig review er ennå
+  ikke bekreftet gjennomført i skyen. Automatisk delegering er ikke etablert.
 
 ## Next
 
-- Sett opp og test et Codex Cloud-miljø med dette repositoryet, inkludert en
-  liten oppgave som kan kjøres mens eierens PC er avslått.
-- Test deretter Claude Code i skyen og etabler en skybasert koordinator med
-  GitHub som felles hukommelse. Direkte delegering mellom agentene er ikke
-  bekreftet og må testes før den legges til grunn.
+- La Codex og Claude Code lese den nye arbeidsmodellen; før merge må de lese
+  dokumentasjonsgrenen/PR-en eksplisitt.
+- Test en liten issue adressert til én agent, manuell oppstart, lenket PR og
+  uavhengig review fra den andre agenten. Chief of Staff følger opp i GitHub.
+- Oppgaveoppretting og automatisk oppstart inngår ikke i denne
+  dokumentasjonsendringen. Senere automatisering vurderes først ved reelt behov.
 - Velg neste produktoppgave med Human Owner. SSB er en mulig neste datakilde;
   Eurostat, OECD, resolver og fler-kilde-`source` er senere forslag, ikke
   igangsatte oppgaver eller vedtatte kontraktendringer.
