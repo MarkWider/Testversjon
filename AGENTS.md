@@ -31,11 +31,6 @@ er en sekundærrolle.
 - Ikke overskriv en annen agents arbeid uten å dokumentere hvorfor.
 - Dokumenter konflikter og eskaler bare vesentlige uenigheter.
 
-## Modellrouting
-
-Følg modellroutingen i `docs/WORKING_MODEL.md`. Eskaler produkt- eller
-arkitekturvalg til Chief of Staff, og viktige irreversible valg til Human Owner.
-
 ## Definition of Done
 
 - Funksjonaliteten virker og relevante tester er kjørt.
@@ -48,3 +43,5 @@ arkitekturvalg til Chief of Staff, og viktige irreversible valg til Human Owner.
 
 Den autoritative oppgavemalen og modellroutingen finnes i
 `docs/WORKING_MODEL.md`. Bruk malen der, inkludert Reviewer og Dependencies.
+Eskaler produkt- eller arkitekturvalg til Chief of Staff, og viktige
+irreversible valg til Human Owner.
