@@ -40,9 +40,18 @@ Verdensbanken. Dette er en teknisk pilot, ikke en bekreftet offentlig lansering.
 
 ## In progress
 
-- Samarbeidsmodell dokumentert i denne endringsgrenen (DEC-009): eksisterende
-  agentmiljøer, GitHub Issues og manuell oppstart. Dokumentasjonsendringen
-  avventer review og merge.
+- Samarbeidsmodellen (DEC-009) er merget i PR #13, merge-commit
+  `48210d1953a0e1406e1015e041cce38fc717bbab`.
+- Human Owner har videreformidlet at Codex bekrefter arbeidsmodellen, og en
+  Claude Code-review av `c8edeff3a33feaf8f8b44b0ff2de8e18bf2a1432` uten
+  blockers, med oppfølgingspunkter. Reviewet kom etter merge og ble ikke
+  publisert i GitHub. Dette oppfyller ikke kravet om review før merge; årsaken
+  til den tidlige mergen er ikke avklart. Chief of Staff opprettet PR-en,
+  men utførte ikke merge.
+- Ifølge Claude Code-rapporten manglet den aktuelle øktens GitHub-integrasjon
+  skrivetilgang: både kommentar og review ble avvist med HTTP 403,
+  «Resource not accessible by integration». Lesetilgang fungerte.
+  Rettighetene er ikke undersøkt eller rettet fra ChatGPT Work.
 - Human Owner bekrefter 31. oktober 2026 at Codex Cloud er testet fra en annen
   enhet mens PC-en var avslått, og at Claude Code har lest prosjektfilene fra et
   skymiljø. Dette er eierbekreftede tester, ikke en ny teknisk verifikasjon her.
@@ -51,12 +60,14 @@ Verdensbanken. Dette er en teknisk pilot, ikke en bekreftet offentlig lansering.
 
 ## Next
 
-- La Codex og Claude Code lese den nye arbeidsmodellen; før merge må de lese
-  dokumentasjonsgrenen/PR-en eksplisitt.
+- Avklar skrivetilgangen i det aktuelle Claude Code-miljøet og test at agenten
+  kan publisere en kommentar og et review. Lesetilgang alene er ikke nok.
+- Verifiser Chief of Staffs issue-oppretting og Codex sin rapportering i GitHub;
+  dette er ennå ikke bekreftet gjennom en test-issue.
 - Test en liten issue adressert til én agent, manuell oppstart, lenket PR og
   uavhengig review fra den andre agenten. Chief of Staff følger opp i GitHub.
-- Oppgaveoppretting og automatisk oppstart inngår ikke i denne
-  dokumentasjonsendringen. Senere automatisering vurderes først ved reelt behov.
+- Vent på uavhengig review før fremtidige PR-er merges. Automatisk oppstart er
+  ikke etablert; senere automatisering vurderes først ved reelt behov.
 - Velg neste produktoppgave med Human Owner. SSB er en mulig neste datakilde;
   Eurostat, OECD, resolver og fler-kilde-`source` er senere forslag, ikke
   igangsatte oppgaver eller vedtatte kontraktendringer.
