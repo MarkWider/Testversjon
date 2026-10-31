@@ -59,7 +59,17 @@ så kilden returnerer hele tilgjengelige historikken. Eksplisitte `from`/`to`
 vinner alltid. `periodMode` strippes fra options før `IndicatorSource` kalles —
 adapterne ser det aldri.
 
-Senere kilder (SSB, Eurostat, OECD) legges til på samme måte, med en resolver som
+`src/adapters/ssb.ts` henter SSB-indikatoren `cpi_annual_total` fra PxWebApi v2
+(`https://data.ssb.no/api/pxwebapi/v2/tables/14701/data`, JSON-stat2, ingen nøkkel,
+CORS åpen) og normaliserer til `IndicatorSeries` med `parseSsbPayload` +
+`normalizeSsb` og injiserbar `fetchJson`/`now`. Celler finnes via dimensjons-id,
+ikke posisjon; `null` blir hull; endret basisår eller målingstype gir `invalid`.
+`getIndicatorData` velger kilde per indikator-id (`routeFor`, DEC-010): SSB-ider
+får ingen standard periodevindu, mens World Bank beholder pilotvinduet.
+Kilde- og metodenotat: `docs/sources/ssb-cpi-annual.md`. Nettverkstest:
+`pnpm test:live` (ikke del av `pnpm test`).
+
+Senere kilder (Eurostat, OECD) legges til på samme måte, med en resolver som
 velger kilde per region. Piloten bygger ikke ETL, database, caching eller backend.
 `NY.GDP.PCAP.CD` er en pilot-indikator, ikke et endelig metodisk produktvalg.
 

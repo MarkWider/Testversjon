@@ -53,6 +53,16 @@ export const WORLD_BANK_INDICATORS: Record<string, WorldBankIndicatorSpec> = {
   },
 }
 
+/**
+ * Own-key lookup: inherited names (`toString`, `constructor`, `__proto__`) are
+ * unknown indicator ids, not World Bank indicators.
+ */
+function worldBankSpecFor(indicatorId: string): WorldBankIndicatorSpec | undefined {
+  return Object.hasOwn(WORLD_BANK_INDICATORS, indicatorId)
+    ? WORLD_BANK_INDICATORS[indicatorId]
+    : undefined
+}
+
 /** Our RegionCode -> World Bank ISO 3166-1 alpha-3 code + display name. */
 const REGION_TABLE: ReadonlyArray<RegionMeta & { iso3: string }> = [
   { code: 'NO', name: 'Norge', iso3: 'NOR' },
@@ -177,7 +187,7 @@ export function normalizeWorldBank(
   payload: WorldBankPayload,
   indicatorId: IndicatorId,
 ): IndicatorSeries {
-  const spec = WORLD_BANK_INDICATORS[indicatorId]
+  const spec = worldBankSpecFor(indicatorId)
   if (!spec) {
     throw new IndicatorError(
       'not_found',
@@ -290,7 +300,7 @@ export async function fetchWorldBankSeries(
   options?: GetIndicatorOptions,
   deps?: WorldBankDeps,
 ): Promise<IndicatorSeries> {
-  const spec = WORLD_BANK_INDICATORS[indicatorId]
+  const spec = worldBankSpecFor(indicatorId)
   if (!spec) {
     throw new IndicatorError(
       'not_found',
@@ -345,7 +355,7 @@ export function createWorldBankSource(deps?: WorldBankDeps): IndicatorSource {
   return {
     id: SOURCE_ID,
     fetch(id, options) {
-      if (!(id in WORLD_BANK_INDICATORS)) return Promise.resolve(null)
+      if (!worldBankSpecFor(id)) return Promise.resolve(null)
       return fetchWorldBankSeries(id, options, deps)
     },
   }

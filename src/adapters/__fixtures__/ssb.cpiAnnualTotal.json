@@ -1,0 +1,234 @@
+{
+  "version": "2.0",
+  "class": "dataset",
+  "label": "14701: Konsumprisindeks, etter vare- og tjenestegruppe og år",
+  "source": "Statistisk sentralbyrå",
+  "updated": "2026-02-10T07:00:00Z",
+  "note": [
+    "På undergruppenivå er det etter teksten føyd til kode (T) tjeneste, (IV) ikke varig vare, (HV) halvveis varig vare, eller (V) varig vare.",
+    "Denne tabellen erstatter [tabell 03014](https://www.ssb.no/statbank/table/03014).",
+    "F.o.m. 2026 er referanseår 2025=100. Endringstall beregnet fra serier med 2025=100 kan avvike fra endringstall publisert før 2026 med annet referanseår. \nAvvikene skyldes i all hovedsak avrundingseffekter. [Se den avsluttede tabellen 03014](https://www.ssb.no/statbank/table/03014) for publiserte endringstall for perioden 2017 t.o.m. 2025 med 2015=100, eller [tabell 11450](https://www.ssb.no/statbank/table/11450) for publiserte endringstall t.o.m. 2016 med 1998=100. Fra januar 2026 gjelder FNs konsumklassifisering COICOP2018."
+  ],
+  "role": {
+    "time": [
+      "Tid"
+    ],
+    "metric": [
+      "ContentsCode"
+    ]
+  },
+  "id": [
+    "VareTjenesteGrp",
+    "ContentsCode",
+    "Tid"
+  ],
+  "size": [
+    1,
+    1,
+    26
+  ],
+  "dimension": {
+    "VareTjenesteGrp": {
+      "label": "vare- og tjenestegruppe",
+      "category": {
+        "index": {
+          "00": 0
+        },
+        "label": {
+          "00": "I alt"
+        }
+      },
+      "extension": {
+        "elimination": true,
+        "eliminationValueCode": "00",
+        "show": "code_value"
+      },
+      "link": {
+        "describedby": [
+          {
+            "extension": {
+              "VareTjenesteGrp": "urn:ssb:classification:klass:691"
+            }
+          }
+        ]
+      }
+    },
+    "ContentsCode": {
+      "label": "statistikkvariabel",
+      "category": {
+        "index": {
+          "KpiAar": 0
+        },
+        "label": {
+          "KpiAar": "Konsumprisindeks (2025=100)"
+        },
+        "unit": {
+          "KpiAar": {
+            "base": "indeks",
+            "decimals": 1
+          }
+        }
+      },
+      "extension": {
+        "elimination": false,
+        "refperiod": {
+          "KpiAar": "Gjennomsnitt for året"
+        },
+        "show": "value",
+        "measuringType": {
+          "KpiAar": "Average"
+        },
+        "priceType": {
+          "KpiAar": "NotApplicable"
+        },
+        "adjustment": {
+          "KpiAar": "None"
+        },
+        "basePeriod": {
+          "KpiAar": "2025"
+        },
+        "alternativeText": {
+          "KpiAar": "Konsumprisindeks (2025=100)"
+        }
+      },
+      "link": {
+        "describedby": [
+          {
+            "extension": {
+              "KpiAar": "urn:ssb:conceptvariable:vardok:2755"
+            }
+          }
+        ]
+      }
+    },
+    "Tid": {
+      "label": "år",
+      "category": {
+        "index": {
+          "2000": 0,
+          "2001": 1,
+          "2002": 2,
+          "2003": 3,
+          "2004": 4,
+          "2005": 5,
+          "2006": 6,
+          "2007": 7,
+          "2008": 8,
+          "2009": 9,
+          "2010": 10,
+          "2011": 11,
+          "2012": 12,
+          "2013": 13,
+          "2014": 14,
+          "2015": 15,
+          "2016": 16,
+          "2017": 17,
+          "2018": 18,
+          "2019": 19,
+          "2020": 20,
+          "2021": 21,
+          "2022": 22,
+          "2023": 23,
+          "2024": 24,
+          "2025": 25
+        },
+        "label": {
+          "2000": "2000",
+          "2001": "2001",
+          "2002": "2002",
+          "2003": "2003",
+          "2004": "2004",
+          "2005": "2005",
+          "2006": "2006",
+          "2007": "2007",
+          "2008": "2008",
+          "2009": "2009",
+          "2010": "2010",
+          "2011": "2011",
+          "2012": "2012",
+          "2013": "2013",
+          "2014": "2014",
+          "2015": "2015",
+          "2016": "2016",
+          "2017": "2017",
+          "2018": "2018",
+          "2019": "2019",
+          "2020": "2020",
+          "2021": "2021",
+          "2022": "2022",
+          "2023": "2023",
+          "2024": "2024",
+          "2025": "2025"
+        }
+      },
+      "extension": {
+        "elimination": false,
+        "show": "code"
+      }
+    }
+  },
+  "extension": {
+    "noteMandatory": {
+      "1": true
+    },
+    "px": {
+      "infofile": "None",
+      "tableid": "14701",
+      "decimals": 1,
+      "official-statistics": true,
+      "aggregallowed": false,
+      "copyright": false,
+      "language": "no",
+      "contents": "14701: Konsumprisindeks,",
+      "descriptiondefault": false,
+      "heading": [
+        "ContentsCode",
+        "Tid"
+      ],
+      "stub": [
+        "VareTjenesteGrp"
+      ],
+      "matrix": "14701",
+      "subject-code": "pp",
+      "subject-area": "Priser og prisindekser"
+    },
+    "discontinued": null,
+    "contact": [
+      {
+        "name": "Konsumprisindeksen",
+        "organization": "Statistisk sentralbyrå",
+        "phone": "62 88 56 34",
+        "mail": "konsumprisindeksen@ssb.no",
+        "raw": " Konsumprisindeksen, Statistisk sentralbyrå# +47 62 88 56 34#konsumprisindeksen@ssb.no"
+      }
+    ]
+  },
+  "value": [
+    54.8,
+    56.4,
+    57.2,
+    58.6,
+    58.9,
+    59.7,
+    61.1,
+    61.6,
+    63.9,
+    65.3,
+    66.9,
+    67.7,
+    68.2,
+    69.6,
+    71.1,
+    72.6,
+    75.2,
+    76.6,
+    78.7,
+    80.4,
+    81.5,
+    84.3,
+    89.2,
+    94.1,
+    97.1,
+    100
+  ]
+}

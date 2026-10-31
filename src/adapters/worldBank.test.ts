@@ -238,3 +238,29 @@ describe('createWorldBankSource', () => {
     expect(series?.source.id).toBe('worldbank')
   })
 })
+
+// --- Regression: inherited property names (coordinated scope addition, #15) ---
+
+describe('inherited property names are unknown World Bank indicators', () => {
+  const ids = ['toString', 'constructor', '__proto__', 'hasOwnProperty', 'valueOf']
+
+  it.each(ids)('normalizeWorldBank("%s") -> not_found', (id) => {
+    expect(() => normalizeWorldBank(parseWorldBankPayload(fixture), id)).toThrowError(
+      expect.objectContaining({ code: 'not_found' }),
+    )
+  })
+
+  it.each(ids)('fetchWorldBankSeries("%s") -> not_found without fetching', async (id) => {
+    const fetchJson = vi.fn((_url: string) => Promise.resolve(fixture))
+    await expect(fetchWorldBankSeries(id, undefined, { fetchJson })).rejects.toMatchObject({
+      code: 'not_found',
+    })
+    expect(fetchJson).not.toHaveBeenCalled()
+  })
+
+  it.each(ids)('createWorldBankSource().fetch("%s") -> null without fetching', async (id) => {
+    const fetchJson = vi.fn((_url: string) => Promise.resolve(fixture))
+    expect(await createWorldBankSource({ fetchJson }).fetch(id)).toBeNull()
+    expect(fetchJson).not.toHaveBeenCalled()
+  })
+})
