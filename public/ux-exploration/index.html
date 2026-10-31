@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="no">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="To forslag til forsiden for Norge i tall." />
+    <title>Norge i tall — utforsk forsiden</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Hopp til innhold</a>
+    <div class="preview-bar">
+      <div class="preview-inner">
+        <p><span class="preview-dot"></span> DESIGNUTFORSKNING <span class="preview-detail">· Forside, ikke ferdig produkt</span></p>
+        <div class="switcher" role="group" aria-label="Velg designforslag">
+          <button type="button" data-layout="a" aria-pressed="true">Forslag A <span>Redaksjonell</span></button>
+          <button type="button" data-layout="b" aria-pressed="false">Forslag B <span>Temakart</span></button>
+        </div>
+      </div>
+    </div>
+    <header class="site-header wrap">
+      <a class="wordmark" href="#top" aria-label="Norge i tall, til toppen">norge <span>i</span> tall<span class="wordmark-dot">.</span></a>
+      <nav aria-label="Hovedmeny" class="main-nav">
+        <a href="#folk">Folk</a><a href="#jobb">Jobb og lommebok</a><a href="#okonomi">Hele Norges økonomi</a><a href="#skatt">Skattepengene</a><a href="#klima">Klima og miljø</a>
+      </nav>
+      <a class="header-link" href="#om">Om prosjektet <span aria-hidden="true">↗</span></a>
+    </header>
+    <main id="main">
+      <div id="top" class="page wrap">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <p class="eyebrow"><span class="eyebrow-line"></span> ET KLARERE BILDE AV NORGE</p>
+            <h1 id="hero-title">Tallene bak<br /><em>landet vårt.</em></h1>
+            <p class="hero-intro">Hvordan har vi det, og hvordan er Norge i endring? Utforsk tallene som gir perspektiv på samfunnet vi deler.</p>
+            <a class="text-link hero-link" href="#temaer">Utforsk temaene <span aria-hidden="true">↘</span></a>
+          </div>
+          <div class="hero-visual" aria-hidden="true">
+            <div class="visual-caption"><span>NORGE, SETT GJENNOM TALL</span><span>01 / 05</span></div>
+            <svg viewBox="0 0 600 330" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 272H600M0 206H600M0 140H600M0 74H600" stroke="#b9cacd" stroke-width="1"/><path d="M0 246C75 235 92 193 158 205S249 179 291 161 357 170 400 120 507 102 600 42" stroke="#173c51" stroke-width="3"/><path d="M0 280C83 273 121 253 175 254S254 232 310 225 397 196 446 195 540 164 600 151" stroke="#6f9994" stroke-width="2"/><circle cx="599" cy="42" r="5" fill="#e76f51"/><circle cx="599" cy="151" r="4" fill="#6f9994"/></svg>
+            <div class="visual-bottom"><span>Historier i utvikling</span><span>Illustrasjon, ikke faktiske data</span></div>
+          </div>
+        </section>
+
+        <section class="discovery" id="temaer" aria-labelledby="themes-title">
+          <div class="section-intro"><div><p class="eyebrow"><span class="eyebrow-line"></span> UTFORSK NORGE</p><h2 id="themes-title">Fem måter å forstå<br /><em>samfunnet på.</em></h2></div><p>Begynn med det du er nysgjerrig på. Hvert tema samler spørsmål, forklaringer og tall på ett sted.</p></div>
+          <div class="theme-list">
+            <article class="theme theme-folk" id="folk"><span class="theme-number">01</span><div class="theme-content"><p class="theme-kicker">MENNESKENE</p><h3>Folk</h3><p>Hvem er vi, hvor bor vi, og hvordan endrer befolkningen seg?</p></div><a href="#videre" aria-label="Utforsk Folk"><span aria-hidden="true">↗</span></a></article>
+            <article class="theme theme-jobb" id="jobb"><span class="theme-number">02</span><div class="theme-content"><p class="theme-kicker">HVERDAGSØKONOMIEN</p><h3>Jobb og lommebok</h3><p>Hvordan utvikler arbeidslivet og økonomien i hverdagen seg?</p></div><a href="#videre" aria-label="Utforsk Jobb og lommebok"><span aria-hidden="true">↗</span></a></article>
+            <article class="theme theme-okonomi" id="okonomi"><span class="theme-number">03</span><div class="theme-content"><p class="theme-kicker">VERDISKAPINGEN</p><h3>Hele Norges økonomi</h3><p>Hva skaper vi, og hvordan utvikler økonomien seg over tid?</p></div><a href="#videre" aria-label="Utforsk Hele Norges økonomi"><span aria-hidden="true">↗</span></a></article>
+            <article class="theme theme-skatt" id="skatt"><span class="theme-number">04</span><div class="theme-content"><p class="theme-kicker">FELLESSKAPET</p><h3>Skattepengene</h3><p>Hvor kommer pengene fra, og hva bruker fellesskapet dem på?</p></div><a href="#videre" aria-label="Utforsk Skattepengene"><span aria-hidden="true">↗</span></a></article>
+            <article class="theme theme-klima" id="klima"><span class="theme-number">05</span><div class="theme-content"><p class="theme-kicker">OMSTILLINGEN</p><h3>Klima og miljø</h3><p>Hvordan endrer utslipp, energi og naturen rundt oss seg?</p></div><a href="#videre" aria-label="Utforsk Klima og miljø"><span aria-hidden="true">↗</span></a></article>
+          </div>
+          <p class="prototype-note" id="videre">Temasidene er foreslåtte innganger og er ikke laget ennå.</p>
+        </section>
+
+        <section class="feature" aria-labelledby="feature-title">
+          <div class="feature-label"><p class="eyebrow"><span class="eyebrow-line"></span> ET STED Å BEGYNNE</p><span>ØKONOMI · INNSIKT</span></div>
+          <div class="feature-copy"><h2 id="feature-title">Hva forteller BNP<br /><em>per innbygger?</em></h2><p>Se hvordan verdiskapingen per innbygger har utviklet seg, og sammenlign Norge med våre naboland.</p><a class="text-link" href="/">Åpne BNP-piloten <span aria-hidden="true">↗</span></a></div>
+          <div class="feature-mark" aria-hidden="true"><span>N</span><i></i><span>01</span></div>
+        </section>
+        <section class="about" id="om"><p class="eyebrow">OM NORGE I TALL</p><h2>Et bedre utgangspunkt<br /><em>for å forstå.</em></h2><p>Åpne data, satt i sammenheng. Målet er å gjøre utviklingen i Norge lettere å utforske og enklere å etterprøve.</p></section>
+      </div>
+    </main>
+    <footer class="footer wrap"><a class="wordmark" href="#top">norge <span>i</span> tall<span class="wordmark-dot">.</span></a><p>En utforskning av hvordan vi kan forstå Norge bedre.</p><a href="#top">Til toppen ↑</a></footer>
+  </body>
+</html>
