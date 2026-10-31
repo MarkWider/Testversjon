@@ -33,11 +33,8 @@ er en sekundærrolle.
 
 ## Modellrouting
 
-- Codex standard: GPT-5.6 Terra, HIGH.
-- Claude Code standard: Claude Sonnet 5, HIGH.
-- Eskaler til Sol HIGH eller Opus HIGH bare ved et konkret vanskelig problem.
-- Eskaler produkt- eller arkitekturvalg til Chief of Staff, og viktige
-  irreversible valg til Human Owner.
+Følg modellroutingen i `docs/WORKING_MODEL.md`. Eskaler produkt- eller
+arkitekturvalg til Chief of Staff, og viktige irreversible valg til Human Owner.
 
 ## Definition of Done
 
@@ -47,16 +44,7 @@ er en sekundærrolle.
 - Kjente problemer og risikoer er eksplisitte.
 - Endringen er forståelig for en uavhengig reviewer.
 
-## Oppgaveformat
+## Oppgaveformat og modellrouting
 
-```text
-TASK ID
-Objective:
-Context:
-Acceptance criteria:
-Constraints:
-Deliverables:
-Recommended agent:
-Recommended model:
-Recommended effort:
-```
+Den autoritative oppgavemalen og modellroutingen finnes i
+`docs/WORKING_MODEL.md`. Bruk malen der, inkludert Reviewer og Dependencies.
