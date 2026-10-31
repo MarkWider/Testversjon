@@ -39,6 +39,8 @@ Verdensbanken. Dette er en teknisk pilot, ikke en bekreftet offentlig lansering.
   og produksjonsbygg bestått.
 - Samarbeidsmodellen (DEC-009) er merget i PR #13, merge-commit
   `48210d1953a0e1406e1015e041cce38fc717bbab`.
+- SSBs årlige KPI-totalindeks er tilgjengelig gjennom tjenestelaget etter
+  uavhengig Codex-review og merge av PR #17 (DEC-010).
 
 ## In progress
 
@@ -64,28 +66,14 @@ Verdensbanken. Dette er en teknisk pilot, ikke en bekreftet offentlig lansering.
   skymiljø. Dette er eierbekreftede tester, ikke en ny teknisk verifikasjon her.
 - Hele arbeidsflyten fra issue via implementasjon til uavhengig review er ennå
   ikke bekreftet gjennomført i skyen. Automatisk delegering er ikke etablert.
-- Issue #15 (Claude Code): første SSB-adapter, `cpi_annual_total` (årlig KPI,
-  totalindeks, Norge, SSB-tabell 14701, 2000–2025) levert i PR fra
-  `claude/ssb-cpi-annual`, avventer uavhengig review av Codex. Ikke koblet til
-  frontend. Se DEC-010 og `docs/sources/ssb-cpi-annual.md`. Codex ba om rettelser
-  (uventede dimensjoner, arvede id-navn); rettet i samme PR, nytt avgrenset
-  Codex-review kreves. Dette er første
-  gjennomkjøring av issue → implementasjon → review i skyen, ikke fullført før
-  reviewet er publisert.
+- Issue #16 (Codex): frontend for `cpi_annual_total` er under utvikling på
+  `codex/ssb-cpi-view` og skal gjennomgås av Claude Code før merge.
 
 ## Next
 
-- Kontroller den siste statusendringen i PR #14 før merge; det eksisterende
-  reviewet gjelder commit `1aad7eb`. Formell GitHub-godkjenning er ikke testet,
-  og eventuell påkrevd godkjenning må følge repositoryets regler.
-- Verifiser Chief of Staffs issue-oppretting og Codex sin rapportering i GitHub;
-  dette er ennå ikke bekreftet gjennom en test-issue.
-- Test en liten issue adressert til én agent, manuell oppstart, lenket PR og
-  uavhengig review fra den andre agenten. Chief of Staff følger opp i GitHub.
+- Gjennomgå frontendleveransen i issue #16 uavhengig før eventuell merge.
 - Vent på uavhengig review før fremtidige PR-er merges. Automatisk oppstart er
   ikke etablert; senere automatisering vurderes først ved reelt behov.
-- Frontend for `cpi_annual_total` følger i separat issue (Codex). `IndicatorContent`
-  har fortsatt BNP-spesifikk tekst (f.eks. tabell-caption «BNP per innbygger»).
 - Velg neste produktoppgave med Human Owner. Eurostat, OECD, resolver og
   fler-kilde-`source` er senere forslag, ikke igangsatte oppgaver eller
   vedtatte kontraktendringer. `SourceMeta.updatedAt` (SSBs `updated`) er et

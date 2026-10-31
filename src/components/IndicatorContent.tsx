@@ -171,8 +171,8 @@ function DataTable({ series }: { series: IndicatorSeries }) {
       <summary>Se verdier i tabell</summary>
       <p>Tabellen inneholder de eksakte verdiene som vises i grafen for valgt periode og land.</p>
       <div className="table-scroll">
-        <table>
-          <caption>BNP per innbygger, {series.unit.code}</caption>
+        <table className={series.regions.length === 1 ? 'single-region-table' : undefined}>
+          <caption>{series.title}, {series.unit.code}</caption>
           <thead>
             <tr>
               <th scope="col">År</th>
@@ -196,13 +196,14 @@ function DataTable({ series }: { series: IndicatorSeries }) {
 }
 
 function AboutData({ series }: { series: IndicatorSeries }) {
+  const isCpi = series.indicator === 'cpi_annual_total'
   return (
     <details className="about-data">
       <summary>Om tallene</summary>
       <div>
-        <p><strong>Definisjon:</strong> BNP per innbygger i løpende amerikanske dollar.</p>
-        <p><strong>Kilde:</strong> {series.source.label}{series.source.fetchedAt ? ', sist oppdatert ' + series.source.fetchedAt : ''}.</p>
-        <p><strong>Forbehold:</strong> Valutakurser og petroleumsinntekter påvirker sammenligningen. Indikatoren kan ikke alene si noe sikkert om produktivitet eller kjøpekraft.</p>
+        <p><strong>Definisjon:</strong> {isCpi ? 'Konsumprisindeksens totalindeks for Norge, som årsgjennomsnitt. Verdiene er indeksnivå, ikke prosentvis prisvekst.' : 'BNP per innbygger i løpende amerikanske dollar.'}</p>
+        <p><strong>Kilde:</strong> {series.source.label}{series.source.fetchedAt ? (isCpi ? ', hentet ' : ', sist oppdatert ') + series.source.fetchedAt : ''}.</p>
+        <p><strong>Forbehold:</strong> {isCpi ? 'Indeksen viser et samlet prisnivå. Ulike husholdninger kan oppleve prisendringer forskjellig.' : 'Valutakurser og petroleumsinntekter påvirker sammenligningen. Indikatoren kan ikke alene si noe sikkert om produktivitet eller kjøpekraft.'}</p>
       </div>
     </details>
   )
@@ -253,21 +254,32 @@ function SuccessContent({ series }: { series: IndicatorSeries }) {
               ))}
             </div>
           </fieldset>
-          <fieldset>
+          {series.regions.some((region) => region.code !== 'NO') && <fieldset>
             <legend>Sammenlign med</legend>
             <div className="control-group">
               {series.regions.filter((region) => region.code !== 'NO').map((region) => (
                 <button aria-pressed={visibleCodes.has(region.code)} className={visibleCodes.has(region.code) ? 'is-active' : ''} key={region.code} onClick={() => toggleRegion(region.code)} type="button">{visibleCodes.has(region.code) ? 'Viser ' : 'Vis '}{region.name}</button>
               ))}
             </div>
-          </fieldset>
+          </fieldset>}
         </div>
-        <p id="chart-data-description" className="visually-hidden">Linjegraf med BNP per innbygger for valgt periode og land. Eksakte verdier finnes i tabellen under grafen.</p>
+        <p id="chart-data-description" className="visually-hidden">Linjegraf med {series.title} for valgt periode og land. Eksakte verdier finnes i tabellen under grafen.</p>
         <IndicatorChart reducedMotion={reducedMotion} series={visibleSeries} latestPeriod={latestPeriod} descriptionId="chart-data-description" />
         <p className="data-notice">Kilde: {series.source.label}</p>
         <DataTable series={visibleSeries} />
       </section>
-      <Findings series={visibleSeries} periodSelection={periodSelection} />
+      {series.indicator === 'cpi_annual_total' ? (
+        <section className="reading" aria-labelledby="findings-title">
+          <p className="eyebrow">HVA VISER DETTE?</p>
+          <h2 id="findings-title">Prisnivået over tid</h2>
+          <p className="reading-lead">Grafen viser SSBs årsgjennomsnitt for konsumprisindeksens totalindeks i Norge. {series.unit.code}.</p>
+          <div className="reading-notes">
+            <p>Verdiene er indeksnivåer for de valgte årene, ikke prosentvis prisvekst.</p>
+            <p>Indeksen sammenligner prisnivået med basisåret som vises i enheten.</p>
+            <p>Kilde: {series.source.label}.</p>
+          </div>
+        </section>
+      ) : <Findings series={visibleSeries} periodSelection={periodSelection} />}
       <AboutData series={series} />
     </>
   )
