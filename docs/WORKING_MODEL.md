@@ -64,21 +64,80 @@ utviklergrensesnitt, skal instruksjonen forklare:
 
 Når samme handling er etablert, kan senere instruksjoner være kortere.
 
-## Oppgaver til agenter
+## Oppgaver og overlevering via GitHub
 
-Når Human Owner skal instruere en agent, leverer Chief of Staff som hovedregel en
-ferdig melding som kan kopieres direkte. Den inneholder:
+Human Owner bruker sine eksisterende Codex Cloud- og Claude Code-miljøer.
+ChatGPT Work er hovedkontaktpunkt og koordinerer arbeidet gjennom GitHub.
+Denne arbeidsformen krever ikke en separat Copilot-agentintegrasjon.
 
-- rolle
-- objective
-- nødvendig context
-- acceptance criteria
-- constraints
-- relevant branch eller PR
-- anbefalt modell og effort
-- hva agenten skal rapportere tilbake
+1. Human Owner og Chief of Staff avklarer mål og prioriteringer i chatten.
+2. Chief of Staff skriver avklarte oppgaver som GitHub Issues. En issue er en
+   nummerert oppgave med beskrivelse, kommentarer og status; den krever ingen
+   commit i kodefilene.
+3. Human Owner starter riktig agent med en kort henvisning til issue-nummeret.
+   En issue, kommentar eller omtale av agentnavnet starter ikke automatisk
+   agenten i de eksisterende miljøene.
+4. Agenten leser styringsfilene, hele oppgaven, kommentarene og relevante åpne
+   PR-er før arbeid. Den rapporterer oppstart og eventuelle blockers i issuen,
+   arbeider på egen branch og leverer en lenket PR.
+5. Chief of Staff leser resultatene i GitHub når oppfølgingen tas opp i chatten,
+   vurderer fremdrift og beskriver neste steg. Human Owner starter også en
+   eventuell review-oppgave hos den andre agenten.
+6. Hovedgrenen oppdateres bare gjennom reviewet PR. En ferdig implementasjon er
+   ikke det samme som en godkjent og merget endring.
 
-Human Owner skal ikke måtte oversette mellom agentene.
+Human Owner skal slippe å kopiere oppgavebeskrivelser og resultater mellom
+chatter. Korte oppstartsbeskjeder er foreløpig manuelle. Direkte delegering,
+automatisk oppstart, varsling til Chief of Staff og kontinuerlig oppfølging i
+bakgrunnen er ikke etablert og skal ikke antas.
+
+### Adressering til Codex og Claude Code
+
+Bruk eksakte mottakernavn: **Codex** og **Claude Code**. «Cloud Code» viser i
+denne prosjektkonteksten til Claude Code, ikke et eget verktøy.
+
+- Issue-tittel: `[Codex] <konkret oppgave>` eller
+  `[Claude Code] <konkret oppgave>`.
+- Feltet `Recommended agent` angir én utførende agent; dette er en eksplisitt
+  adressering i teksten, ikke en teknisk GitHub-tildeling eller automatisk trigger.
+- Oppgi reviewer og avhengigheter eksplisitt. Opprett separate, lenkede issues
+  når begge skal implementere, med tydelig eierskap til filer og leveranser.
+- En review-oppgave peker til PR og commit-SHA, slik at det er klart hvilken
+  kodeversjon som er kontrollert. Nye endringer etter review må vurderes.
+- Ikke start samme oppgave i flere agentøkter samtidig.
+
+Oppgavebeskrivelsen følger dette formatet:
+
+```text
+TASK ID: GitHub issue #<nummer>
+Objective:
+Context:
+Acceptance criteria:
+Constraints: inkludert filer/ansvarsområde og hva som krever eskalering
+Deliverables: PR-lenke, endringer, verifisering og kjente begrensninger
+Recommended agent: Codex | Claude Code
+Recommended model:
+Recommended effort:
+Reviewer:
+Dependencies: lenkede issues/PR-er, eller ingen
+```
+
+Chief of Staff leverer en kort oppstartsbeskjed med konkret issue-nummer.
+Eksempler (bytt ut plassholderen):
+
+- Til Codex: «Les AGENTS.md og styringsfilene den viser til i
+  MarkWider/Testversjon. Les deretter issue #<nummer>, som er adressert til
+  Codex, inkludert kommentarer. Utfør oppgaven og rapporter resultatet i GitHub.»
+- Til Claude Code: «Les AGENTS.md og styringsfilene den viser til i
+  MarkWider/Testversjon. Les deretter issue #<nummer>, som er adressert til
+  Claude Code, inkludert kommentarer. Utfør oppgaven og rapporter resultatet
+  i GitHub.»
+
+Sluttrapporten i GitHub skal oppgi hva som er endret, PR og commit-SHA, hvilke
+kontroller som faktisk er kjørt med resultat, og kjente problemer eller
+beslutninger som gjenstår. Hvis miljøet mangler skrivetilgang eller nødvendige
+verktøy, rapporteres begrensningen; ikke påstå at en kommentar, commit eller PR
+er publisert uten å ha bekreftet det.
 
 ## Organisering
 
