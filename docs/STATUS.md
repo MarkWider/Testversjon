@@ -11,8 +11,9 @@ merget.
 (`NY.GDP.PCAP.CD`, løpende USD) gjennom den uendrede `IndicatorSeries`-kontrakten,
 med pilotvindu 2015–2023 som standard.
 
-`periodMode`-utvidelsen er merget (#10). Første UX-sprint er nå under utvikling
-på `codex/gdp-ux-sprint` og bruker hele serien i frontend for periodevelgeren.
+`periodMode`-utvidelsen (#10) og første UX-sprint (#11) er merget til `main`.
+BNP-siden bruker hele serien i frontend for periodevelgeren og viser data fra
+Verdensbanken. Dette er en teknisk pilot, ikke en bekreftet offentlig lansering.
 
 ## Completed
 
@@ -33,16 +34,25 @@ på `codex/gdp-ux-sprint` og bruker hele serien i frontend for periodevelgeren.
   system, typografi, UX-arkitektur, interaktiv graf, første UX-sprint.
 - `periodMode` merget (#10): kildeuavhengig `periodMode: 'default' | 'all'` i
   `getIndicatorData`, uten kontrakt- eller adapterendring.
+- Første UX-sprint merget (#11): interaktiv graf med periode- og landvalg,
+  datadrevne funn og tilgjengelig tabell. Siste verifisering i PR-en: 79 tester
+  og produksjonsbygg bestått.
 
 ## In progress
 
-- Første UX-sprint (PR #11, `codex/gdp-ux-sprint`): BNP-siden omarbeides med
-  datadrevet periodevelger, landvalg og tilgjengelig dataalternativ.
+- Ingen aktiv utviklings-PR identifisert ved statusgjennomgang 31. oktober 2026.
+- Skybasert arbeidsflyt er ikke bekreftet konfigurert eller testet for prosjektet.
 
 ## Next
 
-- Deretter neste kilde-lag: SSB (Norge), så Eurostat, så OECD, med resolver og
-  fler-kilde-`source` (kontrakt-endring, eget forslag).
+- Sett opp og test et Codex Cloud-miljø med dette repositoryet, inkludert en
+  liten oppgave som kan kjøres mens eierens PC er avslått.
+- Test deretter Claude Code i skyen og etabler en skybasert koordinator med
+  GitHub som felles hukommelse. Direkte delegering mellom agentene er ikke
+  bekreftet og må testes før den legges til grunn.
+- Velg neste produktoppgave med Human Owner. SSB er en mulig neste datakilde;
+  Eurostat, OECD, resolver og fler-kilde-`source` er senere forslag, ikke
+  igangsatte oppgaver eller vedtatte kontraktendringer.
 - Koordinert opprydding: `src/data/gdpPerCapita.ts` + `gdpPerCapita.test.ts`
   fjernes av datalag-eier (ikke lenger importert av produksjonskode).
 
@@ -61,5 +71,5 @@ på `codex/gdp-ux-sprint` og bruker hele serien i frontend for periodevelgeren.
 
 ## Recommended model for next task
 
-Codex GPT-5.6 Terra HIGH for første UX-sprint; Claude Sonnet 5 HIGH for neste
-kilde-lag (SSB) og resolver.
+Codex for oppsett og verifisering av skybasert arbeidsflyt; modellvalg følger
+gjeldende arbeidsmodell og hva som er tilgjengelig på kontoen.
