@@ -38,16 +38,18 @@ Verdensbanken. Dette er en teknisk pilot, ikke en bekreftet offentlig lansering.
   datadrevne funn og tilgjengelig tabell. Siste verifisering i PR-en: 79 tester
   og produksjonsbygg bestått.
 
-## In progress
-
 - Samarbeidsmodellen (DEC-009) er merget i PR #13, merge-commit
   `48210d1953a0e1406e1015e041cce38fc717bbab`.
+
+## In progress
+
 - Human Owner har videreformidlet at Codex bekrefter arbeidsmodellen, og en
   Claude Code-review av `c8edeff3a33feaf8f8b44b0ff2de8e18bf2a1432` uten
   blockers, med oppfølgingspunkter. Reviewet kom etter merge og ble ikke
   publisert i GitHub. Dette oppfyller ikke kravet om review før merge; årsaken
-  til den tidlige mergen er ikke avklart. Chief of Staff opprettet PR-en,
-  men utførte ikke merge.
+  til den tidlige mergen er ikke avklart. Ifølge egen øktlogg opprettet
+  Chief of Staff PR-en uten å utføre merge. GitHub viser kontoen MarkWider;
+  kontonavnet alene skiller ikke mellom eier og agentmiljøer.
 - Ifølge Claude Code-rapporten manglet den aktuelle øktens GitHub-integrasjon
   skrivetilgang: både kommentar og review ble avvist med HTTP 403,
   «Resource not accessible by integration». Lesetilgang fungerte.
